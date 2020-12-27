@@ -40,7 +40,7 @@ void Laborator2::Init()
 	no_of_generated_points = 10;	//number of points on a Bezier curve
 	no_of_instances = 5;			//number of instances (number of curves that contain the surface)
 	max_translate = 8.0f;			//for the translation surface, it's the distance between the first and the last curve
-	max_rotate = glm::radians(360.0f);	//for the rotation surface, it's the angle between the first and the last curve
+	max_rotate = 0.05f;	//for the rotation surface, it's the angle between the first and the last curve
 
 	//define control points
 	control_p1 = glm::vec3(-4, -2.5, 1.0);
@@ -126,7 +126,12 @@ void Laborator2::Update(float deltaTimeSeconds)
 
 	//TODO 
 	//trimitei la shadere numarul de puncte care aproximeaza o curba (no_of_generated_points)
+	glUniform1i(glGetUniformLocation(shader->program, "no_of_generated_points"), no_of_generated_points);
+
 	//si caracteristici pentru crearea suprafetelor de translatie/rotatie (max_translate, max_rotate)
+	glUniform1f(glGetUniformLocation(shader->program, "max_translate"), max_translate);
+	glUniform1f(glGetUniformLocation(shader->program, "max_rotate"), max_rotate);
+
 	
 	Mesh* mesh = meshes["surface"];
 	//draw the object instanced
@@ -152,6 +157,12 @@ void Laborator2::OnKeyPress(int key, int mods)
 	
 	//TODO 
 	//modificati numarul de instante si numarul de puncte generate
+	if (key == GLFW_KEY_P) {
+		no_of_generated_points++;
+	}
+	elif (key == GLFW_KEY_I) {
+		no_of_instances++;
+	}
 };
 
 void Laborator2::OnKeyRelease(int key, int mods)
