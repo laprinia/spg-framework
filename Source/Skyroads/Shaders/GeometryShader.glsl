@@ -1,4 +1,4 @@
-#version 430
+version 430
 layout(triangles) in;
 layout(triangle_strip, max_vertices = 170) out;
 
@@ -30,7 +30,7 @@ void main()
 	p2 = p2 + normalize(p2 - gravityPoint) / shrink;
 	p3 = p3 + normalize(p3 - gravityPoint) / shrink;
 
-	for (int i = 0; i < 1; i++)
+	for (int i = 0; i <= instances; i++)
 	{
 		//TODO modify offset so that instances are displayed on 6 columns
 		vec3 offset = vec3( (i % 6 ) * 4, (i / 6) * 4, 0);

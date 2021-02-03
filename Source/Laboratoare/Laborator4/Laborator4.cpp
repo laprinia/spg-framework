@@ -45,7 +45,7 @@ void Laborator4::Init()
 
 	// Create a shader program for rendering to texture
 	{
-		Shader *shader = new Shader("CubeMap");
+		Shader* shader = new Shader("CubeMap");
 		shader->AddShader(shaderPath + "CubeMap.VS.glsl", GL_VERTEX_SHADER);
 		shader->AddShader(shaderPath + "CubeMap.FS.glsl", GL_FRAGMENT_SHADER);
 		shader->CreateAndLink();
@@ -54,7 +54,7 @@ void Laborator4::Init()
 
 	// Create a shader program for rendering to texture
 	{
-		Shader *shader = new Shader("ShaderNormal");
+		Shader* shader = new Shader("ShaderNormal");
 		shader->AddShader(shaderPath + "Normal.VS.glsl", GL_VERTEX_SHADER);
 		shader->AddShader(shaderPath + "Normal.FS.glsl", GL_FRAGMENT_SHADER);
 		shader->CreateAndLink();
@@ -87,7 +87,7 @@ void Laborator4::Update(float deltaTimeSeconds)
 
 	// draw the cubemap
 	{
-		Shader *shader = shaders["ShaderNormal"];
+		Shader* shader = shaders["ShaderNormal"];
 		shader->Use();
 
 		glm::mat4 modelMatrix = glm::scale(glm::mat4(1), glm::vec3(30));
@@ -106,7 +106,7 @@ void Laborator4::Update(float deltaTimeSeconds)
 
 	// draw the reflextion on the mesh
 	{
-		Shader *shader = shaders["CubeMap"];
+		Shader* shader = shaders["CubeMap"];
 		shader->Use();
 
 		glm::mat4 modelMatrix = glm::scale(glm::mat4(1), glm::vec3(0.1f));
@@ -134,7 +134,7 @@ void Laborator4::FrameEnd()
 	DrawCoordinatSystem();
 }
 
-unsigned int Laborator4::UploadCubeMapTexture(const std::string &posx, const std::string &posy, const std::string &posz, const std::string& negx, const std::string& negy, const std::string& negz)
+unsigned int Laborator4::UploadCubeMapTexture(const std::string& posx, const std::string& posy, const std::string& posz, const std::string& negx, const std::string& negy, const std::string& negz)
 {
 	int width, height, chn;
 
@@ -147,8 +147,10 @@ unsigned int Laborator4::UploadCubeMapTexture(const std::string &posx, const std
 
 	// TODO - create OpenGL texture
 	unsigned int textureID = 0;
+	glGenTextures(1, &textureID);
 
 	// TODO - bind the texture
+	glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
 
 	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 
@@ -165,6 +167,13 @@ unsigned int Laborator4::UploadCubeMapTexture(const std::string &posx, const std
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
 	// TODO - load texture information for each face
+
+	glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data_posx);
+	glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Y, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data_posy);
+	glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Z, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data_posz);
+	glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_X, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data_negx);
+	glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data_negy);
+	glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data_negz);
 
 	glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
 

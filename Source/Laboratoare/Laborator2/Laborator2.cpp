@@ -160,7 +160,7 @@ void Laborator2::OnKeyPress(int key, int mods)
 	if (key == GLFW_KEY_P) {
 		no_of_generated_points++;
 	}
-	elif (key == GLFW_KEY_I) {
+	else if (key == GLFW_KEY_I) {
 		no_of_instances++;
 	}
 };
