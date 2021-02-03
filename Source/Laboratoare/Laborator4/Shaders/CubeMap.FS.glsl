@@ -11,25 +11,25 @@ uniform vec3 camera_position;
 layout(location = 0) out vec4 out_color;
 
 vec3 V;
-
 vec3 myReflect()
 {
-    // TODO - compute the reflection color value
-	vec3 reflection = reflect(-V, world_normal);
-	return texture(texture_cubemap, reflection).xyz;
+    vec3 reflection=reflect(-V, world_normal);
+
+    return texture(texture_cubemap, reflection).xyz;
 }
+
 
 vec3 myRefract(float refractive_index)
 {
-    // TODO - compute the refraction color value
-	vec3 refraction = refract(-V, world_normal, 0.5);
-	return texture(texture_cubemap, refraction).xyz;
+    vec3 refraction=refract(-V,world_normal,refractive_index);
+    return texture(texture_cubemap,refraction).xyz;
 }
+
+
 
 void main()
 {
-	V = normalize(camera_position - world_position);
-
+    V=normalize(camera_position-world_position);
     out_color = vec4(myReflect(), 0);
-	out_color += vec4(myRefract(1.33), 0);
+	out_color += vec4(myRefract(1.0/1.33), 0);
 }
