@@ -22,7 +22,18 @@ void EmitPoint(vec2 offset)
 
 void main()
 {
-	float ds = 0.05 ;
+	float ds = 0.05f;
+	
+	texture_coord = vec2(0, 0);
+	EmitPoint(vec2(-ds,-ds));
+	texture_coord = vec2(1, 0);
+	EmitPoint(vec2(ds,-ds));
+	texture_coord = vec2(0, 1);
+	EmitPoint(vec2(-ds,ds));
+	texture_coord = vec2(1, 1);
+	EmitPoint(vec2(ds,ds));
+
+	EndPrimitive();
 
 	// Create a quad using triangle strip
 	//

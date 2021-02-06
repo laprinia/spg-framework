@@ -233,15 +233,6 @@
     <None Include="..\Source\Laboratoare\Laborator7\Shaders\VertexShader.glsl">
       <Filter>Laboratoare\Laborator7\Shaders</Filter>
     </None>
-    <None Include="..\Source\Laboratoare\Laborator5\Shaders\FragmentShader.glsl">
-      <Filter>Laboratoare\Laborator5\Shaders</Filter>
-    </None>
-    <None Include="..\Source\Laboratoare\Laborator5\Shaders\VertexShader.glsl">
-      <Filter>Laboratoare\Laborator5\Shaders</Filter>
-    </None>
-    <None Include="..\Source\Laboratoare\Laborator5\Shaders\GeometryShader.glsl">
-      <Filter>Laboratoare\Laborator5\Shaders</Filter>
-    </None>
     <None Include="..\Source\Laboratoare\Laborator6\Shaders\Render2Texture.FS.glsl">
       <Filter>Laboratoare\Laborator6\Shaders</Filter>
     </None>
@@ -295,6 +286,21 @@
     </None>
     <None Include="..\Source\Laboratoare\Laborator6\Shaders\LightPass.FS.glsl">
       <Filter>Laboratoare\Laborator6\Shaders</Filter>
+    </None>
+    <None Include="..\Source\Laboratoare\Laborator5\Shaders\Particle.FS.glsl">
+      <Filter>Laboratoare\Laborator5\Shaders</Filter>
+    </None>
+    <None Include="..\Source\Laboratoare\Laborator5\Shaders\Particle.GS.glsl">
+      <Filter>Laboratoare\Laborator5\Shaders</Filter>
+    </None>
+    <None Include="..\Source\Laboratoare\Laborator5\Shaders\Particle.VS.glsl">
+      <Filter>Laboratoare\Laborator5\Shaders</Filter>
+    </None>
+    <None Include="..\Source\Laboratoare\Laborator5\Shaders\Simple.FS.glsl">
+      <Filter>Laboratoare\Laborator5\Shaders</Filter>
+    </None>
+    <None Include="..\Source\Laboratoare\Laborator5\Shaders\Simple.VS.glsl">
+      <Filter>Laboratoare\Laborator5\Shaders</Filter>
     </None>
   </ItemGroup>
 </Project>

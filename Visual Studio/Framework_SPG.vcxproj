@@ -88,9 +88,11 @@
     <None Include="..\Source\Laboratoare\Laborator4\Shaders\CubeMap.VS.glsl" />
     <None Include="..\Source\Laboratoare\Laborator4\Shaders\Normal.FS.glsl" />
     <None Include="..\Source\Laboratoare\Laborator4\Shaders\Normal.VS.glsl" />
-    <None Include="..\Source\Laboratoare\Laborator5\Shaders\FragmentShader.glsl" />
-    <None Include="..\Source\Laboratoare\Laborator5\Shaders\GeometryShader.glsl" />
-    <None Include="..\Source\Laboratoare\Laborator5\Shaders\VertexShader.glsl" />
+    <None Include="..\Source\Laboratoare\Laborator5\Shaders\Particle.FS.glsl" />
+    <None Include="..\Source\Laboratoare\Laborator5\Shaders\Particle.GS.glsl" />
+    <None Include="..\Source\Laboratoare\Laborator5\Shaders\Particle.VS.glsl" />
+    <None Include="..\Source\Laboratoare\Laborator5\Shaders\Simple.FS.glsl" />
+    <None Include="..\Source\Laboratoare\Laborator5\Shaders\Simple.VS.glsl" />
     <None Include="..\Source\Laboratoare\Laborator6\Shaders\Composition.FS.glsl" />
     <None Include="..\Source\Laboratoare\Laborator6\Shaders\LightPass.FS.glsl" />
     <None Include="..\Source\Laboratoare\Laborator6\Shaders\LightPass.VS.glsl" />
