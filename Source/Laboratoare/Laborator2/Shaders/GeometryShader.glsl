@@ -2,15 +2,15 @@
 layout(lines) in;
 //TODO 
 //prima data generati o curba (cu line strip), apoi o suprafata de rotatie/translatie cu triangle_strip
-//layout(line_strip, max_vertices = 256) out;
-layout(triangle_strip, max_vertices = 256) out;
+layout(line_strip, max_vertices = 256) out;
+
 uniform mat4 View;
 uniform mat4 Projection;
 uniform vec3 control_p1, control_p2, control_p3, control_p4;
 uniform int no_of_instances;
 uniform int no_of_generated_points;
-//uniform float max_translate;
-//uniform float max_rotate;
+
+
 in int instance[2];
 
 
@@ -40,37 +40,27 @@ void main()
 	{
 		//TODO 
 		//in loc sa emiteti varfuri reprezentand punctele de control, emiteti varfuri care sa aproximeze curba Bezier
+
 		vec3 delta = vec3(1, 0, 0) * instance[0];
-		vec3 delta2 = vec3(1, 0, 0) * instance[0];
+		vec3 delta2 = vec3(1, 0, 0) * (instance[0]);
 		vec3 delta3 = vec3(1, 0, 0) * (instance[0] + 1);
 		vec3 delta4 = vec3(1, 0, 0) * (instance[0] + 1);
 
-		delta2 = rotateY(delta2, 0.05f);
-		delta4 = rotateY(delta4, 0.05f);
-
-		for(float t=0.0; t<1; t+=1.0/no_of_generated_points) {
-		
-		    delta = rotateY(delta, 0.05f);
-			delta2 = rotateY(delta2, 0.05f);
-			delta3 = rotateY(delta3, 0.05f);
-			delta4 = rotateY(delta4, 0.05f);
-			vec3 p1 = bezier(t);
-			vec3 p2 = bezier(t + 1.0 / no_of_generated_points);
-			vec3 p3 = bezier(t);
-			vec3 p4 = bezier(t + 1.0 / no_of_generated_points);
-
+		for (float t = 0.0; t < 1; t += 1.0 / no_of_generated_points) {
 			
-
-		    gl_Position = Projection * View * vec4(p1 + delta, 1);	EmitVertex();
-			gl_Position = Projection * View * vec4(p2 + delta2, 1);	EmitVertex();
-			gl_Position = Projection * View * vec4(p3 + delta3, 1);	EmitVertex();
-			gl_Position = Projection * View * vec4(p3 + delta3, 1);	EmitVertex();
-			gl_Position = Projection * View * vec4(p4 + delta4, 1);	EmitVertex();
-			gl_Position = Projection * View * vec4(p2 + delta2, 1);	EmitVertex();
-
-
-		}
+		vec3 p1 = bezier(t);
+		vec3 p2 = bezier(t + 1.0 / no_of_generated_points);
+		vec3 p3 = bezier(t);
+		vec3 p4 = bezier(t + 1.0 / no_of_generated_points);
 	
+		gl_Position = Projection* View * vec4(p1+delta, 1);	EmitVertex();
+		gl_Position = Projection * View * vec4(p2+delta2, 1);	EmitVertex();
+		gl_Position = Projection * View * vec4(p3+delta3, 1);	EmitVertex();
+		gl_Position = Projection * View * vec4(p3+delta3, 1);	EmitVertex();
+		gl_Position = Projection * View * vec4(p4+delta4, 1);	EmitVertex();
+		gl_Position = Projection * View * vec4(p2+delta2, 1);	EmitVertex();
+	
+		}
 		EndPrimitive();
 	}
 }

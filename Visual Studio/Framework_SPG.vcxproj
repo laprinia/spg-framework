@@ -103,9 +103,9 @@
     <None Include="..\Source\Laboratoare\Laborator6\Shaders\Composition.VS.glsl" />
     <None Include="..\Source\Laboratoare\Laborator7\Shaders\FragmentShader.glsl" />
     <None Include="..\Source\Laboratoare\Laborator7\Shaders\VertexShader.glsl" />
-    <None Include="..\Source\NorwegianFjords\Shaders\FragmentShader.glsl" />
-    <None Include="..\Source\NorwegianFjords\Shaders\GeometryShader.glsl" />
-    <None Include="..\Source\NorwegianFjords\Shaders\VertexShader.glsl" />
+    <None Include="..\Source\NorwegianFjords\Shaders\BezierGeneratorFS.glsl" />
+    <None Include="..\Source\NorwegianFjords\Shaders\BezierGeneratorGS.glsl" />
+    <None Include="..\Source\NorwegianFjords\Shaders\BezierGeneratorVS.glsl" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{FB43B467-42CC-458C-9556-597B025830F7}</ProjectGuid>

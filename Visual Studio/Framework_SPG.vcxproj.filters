@@ -314,13 +314,13 @@
     <None Include="..\Source\Laboratoare\Laborator5\Shaders\Simple.VS.glsl">
       <Filter>Laboratoare\Laborator5\Shaders</Filter>
     </None>
-    <None Include="..\Source\NorwegianFjords\Shaders\FragmentShader.glsl">
+    <None Include="..\Source\NorwegianFjords\Shaders\BezierGeneratorFS.glsl">
       <Filter>NorwegianFjords\Shaders</Filter>
     </None>
-    <None Include="..\Source\NorwegianFjords\Shaders\GeometryShader.glsl">
+    <None Include="..\Source\NorwegianFjords\Shaders\BezierGeneratorGS.glsl">
       <Filter>NorwegianFjords\Shaders</Filter>
     </None>
-    <None Include="..\Source\NorwegianFjords\Shaders\VertexShader.glsl">
+    <None Include="..\Source\NorwegianFjords\Shaders\BezierGeneratorVS.glsl">
       <Filter>NorwegianFjords\Shaders</Filter>
     </None>
   </ItemGroup>
