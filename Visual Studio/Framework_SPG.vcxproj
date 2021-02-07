@@ -43,6 +43,7 @@
     <ClCompile Include="..\Source\Laboratoare\Laborator7\Laborator7.cpp" />
     <ClCompile Include="..\Source\Laboratoare\Laborator7\Laborator7_WinAPI.cpp" />
     <ClCompile Include="..\Source\Main.cpp" />
+    <ClCompile Include="..\Source\NorwegianFjords\NorwegianFjords.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Source\Component\CameraInput.h" />
@@ -74,6 +75,7 @@
     <ClInclude Include="..\Source\Laboratoare\Laborator5\Laborator5.h" />
     <ClInclude Include="..\Source\Laboratoare\Laborator6\Laborator6.h" />
     <ClInclude Include="..\Source\Laboratoare\Laborator7\Laborator7.h" />
+    <ClInclude Include="..\Source\NorwegianFjords\NorwegianFjords.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Source\Laboratoare\Laborator1\Shaders\FragmentShader.glsl" />
@@ -101,6 +103,9 @@
     <None Include="..\Source\Laboratoare\Laborator6\Shaders\Composition.VS.glsl" />
     <None Include="..\Source\Laboratoare\Laborator7\Shaders\FragmentShader.glsl" />
     <None Include="..\Source\Laboratoare\Laborator7\Shaders\VertexShader.glsl" />
+    <None Include="..\Source\NorwegianFjords\Shaders\FragmentShader.glsl" />
+    <None Include="..\Source\NorwegianFjords\Shaders\GeometryShader.glsl" />
+    <None Include="..\Source\NorwegianFjords\Shaders\VertexShader.glsl" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{FB43B467-42CC-458C-9556-597B025830F7}</ProjectGuid>

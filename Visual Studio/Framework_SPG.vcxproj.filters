@@ -64,6 +64,12 @@
     <Filter Include="Laboratoare\Laborator3\Shaders">
       <UniqueIdentifier>{66e624e2-f712-4e5b-95bd-5fcfd085debf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="NorwegianFjords">
+      <UniqueIdentifier>{54c363be-f9f8-4102-9dfa-4b25fe3c91a7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="NorwegianFjords\Shaders">
+      <UniqueIdentifier>{b086cf26-2d33-4dd6-903d-20e1324293ae}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Source\Core\Engine.cpp">
@@ -135,6 +141,9 @@
     </ClCompile>
     <ClCompile Include="..\Source\Laboratoare\Laborator7\Laborator7_WinAPI.cpp">
       <Filter>Laboratoare\Laborator7</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\NorwegianFjords\NorwegianFjords.cpp">
+      <Filter>NorwegianFjords</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -225,6 +234,9 @@
     <ClInclude Include="..\Source\Core\GPU\ParticleEffect.h">
       <Filter>Core\GPU</Filter>
     </ClInclude>
+    <ClInclude Include="..\Source\NorwegianFjords\NorwegianFjords.h">
+      <Filter>NorwegianFjords</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Source\Laboratoare\Laborator7\Shaders\FragmentShader.glsl">
@@ -301,6 +313,15 @@
     </None>
     <None Include="..\Source\Laboratoare\Laborator5\Shaders\Simple.VS.glsl">
       <Filter>Laboratoare\Laborator5\Shaders</Filter>
+    </None>
+    <None Include="..\Source\NorwegianFjords\Shaders\FragmentShader.glsl">
+      <Filter>NorwegianFjords\Shaders</Filter>
+    </None>
+    <None Include="..\Source\NorwegianFjords\Shaders\GeometryShader.glsl">
+      <Filter>NorwegianFjords\Shaders</Filter>
+    </None>
+    <None Include="..\Source\NorwegianFjords\Shaders\VertexShader.glsl">
+      <Filter>NorwegianFjords\Shaders</Filter>
     </None>
   </ItemGroup>
 </Project>

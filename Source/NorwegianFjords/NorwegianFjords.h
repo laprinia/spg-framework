@@ -1,12 +1,14 @@
 #pragma once
 #include <Component/SimpleScene.h>
 
-class Skyroads: public SimpleScene
-{	
+class NorwegianFjords : public SimpleScene
+{
 public:
-	Skyroads();
-	~Skyroads();
+	NorwegianFjords();
+	~NorwegianFjords();
+
 	void Init() override;
+
 private:
 	void FrameStart() override;
 	void Update(float deltaTimeSeconds) override;
@@ -20,6 +22,5 @@ private:
 	void OnMouseBtnRelease(int mouseX, int mouseY, int button, int mods) override;
 	void OnMouseScroll(int mouseX, int mouseY, int offsetX, int offsetY) override;
 	void OnWindowResize(int width, int height) override;
-
-
 };
+
