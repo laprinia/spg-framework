@@ -22,9 +22,9 @@ private:
 	void OnMouseScroll(int mouseX, int mouseY, int offsetX, int offsetY) override;
 	void OnWindowResize(int width, int height) override;
 	void RenderInstancedMesh(Mesh* mesh, Shader* shader, const glm::mat4& modelMatrix, int instances);
-	void GenerateRiver(Shader* shader);
+	void GenerateRiver(Mesh* mesh, Shader* shader,glm::vec3 point1, glm::vec3 point2, glm::vec3 point3, glm::vec3 point4);
 	void GenerateControlPoints();
-	float GenerateRandomFloat(float upper);
+	float GenerateRandomFloat(float lower, float upper);
 
 	int numberOfBezierInstances = 2;
 	int  numberOfBezierPoints=10;
@@ -33,5 +33,12 @@ private:
 	glm::vec3 controlP2;
 	glm::vec3 controlP3;
 	glm::vec3 controlP4;
+	glm::vec3 controlP5;
+	glm::vec3 controlP6;
+	glm::vec3 controlP7;
+	glm::vec3 controlP8;
+	glm::vec3 controlP9;
+	glm::vec3 controlP10;
+
 };
 

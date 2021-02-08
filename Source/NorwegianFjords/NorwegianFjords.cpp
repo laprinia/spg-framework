@@ -12,15 +12,28 @@ NorwegianFjords::~NorwegianFjords() {
 
 }
 
-float NorwegianFjords::GenerateRandomFloat(float upper) {
-	
-	return static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / upper));
+float NorwegianFjords::GenerateRandomFloat(float lower, float upper) {
+
+	float random = ((float)rand()) / (float)RAND_MAX;
+	float diff = upper - lower;
+	float r = random * diff;
+	return lower + r;
 }
 void NorwegianFjords::GenerateControlPoints() {
-	controlP1 = glm::vec3(0, 0,0.0);
-	controlP2 = glm::vec3(10.0,0, -4.0);
-	controlP3 = glm::vec3(-10.0, 0,-10.0);
-	controlP4 = glm::vec3(4.0,0, -20.0);
+	//main branch
+	controlP1 = glm::vec3(0.0, 0.0, 0.0);
+	controlP2 = glm::vec3(GenerateRandomFloat(-5, 5), 0, controlP1.z +GenerateRandomFloat(-5, -1));
+	controlP3 = glm::vec3(GenerateRandomFloat(-5, 5), 0, controlP2.z + GenerateRandomFloat(-5, -1));
+	controlP4 = glm::vec3(GenerateRandomFloat(-5, 5), 0, controlP3.z + GenerateRandomFloat(-5, -1));
+	//second branch
+	controlP5 = glm::vec3(GenerateRandomFloat(-5, 5), 0, controlP4.z + GenerateRandomFloat(-5, -1));
+	controlP6 = glm::vec3(GenerateRandomFloat(-5, 5), 0, controlP5.z + GenerateRandomFloat(-5, -1));
+	controlP7 = glm::vec3(GenerateRandomFloat(-5, 5), 0, controlP6.z + GenerateRandomFloat(-5, -1));
+	//third branch
+	controlP8 = glm::vec3(controlP5.x+GenerateRandomFloat(5, 15), 0, controlP4.z + GenerateRandomFloat(-5, -1));
+	controlP9 = glm::vec3(controlP6.x+GenerateRandomFloat(5, 15), 0, controlP8.z + GenerateRandomFloat(-5, -1));
+	controlP10 = glm::vec3(controlP7.x+GenerateRandomFloat(5, 15), 0, controlP9.z + GenerateRandomFloat(-5, -1));
+
 }
 
 void NorwegianFjords::Init() {
@@ -29,7 +42,7 @@ void NorwegianFjords::Init() {
 
 	camera->SetPositionAndRotation(glm::vec3(0, 5, 4), glm::quat(glm::vec3(-30 * TO_RADIANS, 0, 0)));
 	camera->Update();
-	
+
 
 	std::string shaderPath = "Source/NorwegianFjords/Shaders/";
 	{
@@ -58,8 +71,41 @@ void NorwegianFjords::Init() {
 		meshes["riverSurface"] = new Mesh("riverSurface");
 		meshes["riverSurface"]->InitFromData(vertices, indices);
 		meshes["riverSurface"]->SetDrawMode(GL_LINES);
+
+		std::vector<VertexFormat> vertices2
+		{
+			VertexFormat(glm::vec3(controlP4.x, controlP4.y,  controlP4.z), glm::vec3(0, 0, 1)),
+			VertexFormat(glm::vec3(controlP7.x, controlP7.y,  controlP7.z), glm::vec3(0, 0, 1))
+		};
+
+
+		std::vector<unsigned short> indices2 =
+		{
+			0, 1
+		};
+
+		meshes["riverSurface2"] = new Mesh("riverSurface2");
+		meshes["riverSurface2"]->InitFromData(vertices2, indices2);
+		meshes["riverSurface2"]->SetDrawMode(GL_LINES);
+
+		std::vector<VertexFormat> vertices3
+		{
+			VertexFormat(glm::vec3(controlP4.x, controlP4.y,  controlP4.z), glm::vec3(0, 0, 1)),
+			VertexFormat(glm::vec3(controlP10.x, controlP10.y,  controlP10.z), glm::vec3(0, 0, 1))
+		};
+
+
+		std::vector<unsigned short> indices3 =
+		{
+			0, 1
+		};
+
+		meshes["riverSurface3"] = new Mesh("riverSurface3");
+		meshes["riverSurface3"]->InitFromData(vertices3, indices3);
+		meshes["riverSurface3"]->SetDrawMode(GL_LINES);
+
 	}
-	
+
 }
 
 void NorwegianFjords::FrameStart()
@@ -71,18 +117,18 @@ void NorwegianFjords::FrameStart()
 	glViewport(0, 0, resolution.x, resolution.y);
 }
 
-void NorwegianFjords::GenerateRiver(Shader* shader)
+void NorwegianFjords::GenerateRiver(Mesh* mesh, Shader* shader, glm::vec3 point1, glm::vec3 point2, glm::vec3 point3, glm::vec3 point4)
 {
 
-	glUniform3f(glGetUniformLocation(shader->program, "control_p1"), controlP1.x, controlP1.y, controlP1.z);
-	glUniform3f(glGetUniformLocation(shader->program, "control_p2"), controlP2.x, controlP2.y, controlP1.z);
-	glUniform3f(glGetUniformLocation(shader->program, "control_p3"), controlP3.x, controlP3.y, controlP3.z);
-	glUniform3f(glGetUniformLocation(shader->program, "control_p4"), controlP4.x, controlP4.y, controlP4.z);
+	glUniform3f(glGetUniformLocation(shader->program, "control_p1"), point1.x, point1.y, point1.z);
+	glUniform3f(glGetUniformLocation(shader->program, "control_p2"), point2.x, point2.y, point2.z);
+	glUniform3f(glGetUniformLocation(shader->program, "control_p3"), point3.x, point3.y, point3.z);
+	glUniform3f(glGetUniformLocation(shader->program, "control_p4"), point4.x, point4.y, point4.z);
 	glUniform1i(glGetUniformLocation(shader->program, "instanceNumber"), numberOfBezierInstances);
 	glUniform1i(glGetUniformLocation(shader->program, "pointsNumber"), numberOfBezierPoints);
-	
 
-	Mesh* mesh = meshes["riverSurface"];
+
+
 
 	RenderInstancedMesh(mesh, shader, glm::mat4(1), numberOfBezierInstances);
 }
@@ -94,8 +140,11 @@ void NorwegianFjords::Update(float deltaTimeSeconds)
 
 	Shader* shader = shaders["SurfaceGeneration"];
 	shader->Use();
-	GenerateRiver(shader);
-	
+
+	GenerateRiver(meshes["riverSurface"], shader, controlP1, controlP2, controlP3, controlP4);
+	GenerateRiver(meshes["riverSurface2"], shader, controlP4, controlP5, controlP6, controlP7);
+	GenerateRiver(meshes["riverSurface3"], shader, controlP4, controlP8, controlP9, controlP10);
+
 
 }
 
@@ -103,8 +152,8 @@ void NorwegianFjords::RenderInstancedMesh(Mesh* mesh, Shader* shader, const glm:
 
 	if (!mesh || !shader || !shader->GetProgramID())
 		return;
-	
-	
+
+
 	glUseProgram(shader->program);
 
 
@@ -122,7 +171,7 @@ void NorwegianFjords::RenderInstancedMesh(Mesh* mesh, Shader* shader, const glm:
 
 	glBindVertexArray(mesh->GetBuffers()->VAO);
 	glDrawElementsInstanced(mesh->GetDrawMode(), static_cast<int>(mesh->indices.size()), GL_UNSIGNED_INT, (void*)0, instances);
-	
+
 
 }
 
@@ -138,35 +187,35 @@ void NorwegianFjords::OnInputUpdate(float deltaTime, int mods)
 
 void NorwegianFjords::OnKeyPress(int key, int mods)
 {
-	
+
 };
 
 void NorwegianFjords::OnKeyRelease(int key, int mods)
 {
-	
+
 };
 
 void NorwegianFjords::OnMouseMove(int mouseX, int mouseY, int deltaX, int deltaY)
 {
-	
+
 };
 
 void NorwegianFjords::OnMouseBtnPress(int mouseX, int mouseY, int button, int mods)
 {
-	
+
 };
 
 void NorwegianFjords::OnMouseBtnRelease(int mouseX, int mouseY, int button, int mods)
 {
-	
+
 }
 
 void NorwegianFjords::OnMouseScroll(int mouseX, int mouseY, int offsetX, int offsetY)
 {
-	
+
 }
 
 void NorwegianFjords::OnWindowResize(int width, int height)
 {
-	
+
 }
