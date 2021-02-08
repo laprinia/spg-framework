@@ -59,7 +59,7 @@ void Laborator5::Init()
 
 	// Load textures
 	{
-		TextureManager::LoadTexture(RESOURCE_PATH::TEXTURES, "particle2.png");
+		TextureManager::LoadTexture(RESOURCE_PATH::TEXTURES, "water.jpg");
 	}
 
 	LoadShader("Simple", false);
@@ -122,7 +122,7 @@ void Laborator5::Update(float deltaTimeSeconds)
 		if (shader->GetProgramID())
 		{
 			shader->Use();
-			TextureManager::GetTexture("particle2.png")->BindToTextureUnit(GL_TEXTURE0);
+			TextureManager::GetTexture("water.jpg")->BindToTextureUnit(GL_TEXTURE0);
 			particleEffect->Render(GetSceneCamera(), shader);
 		}
 	}

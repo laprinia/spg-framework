@@ -26,8 +26,9 @@ private:
 	void GenerateControlPoints();
 	float GenerateRandomFloat(float lower, float upper);
 
-	int numberOfBezierInstances = 2;
-	int  numberOfBezierPoints=10;
+	std::unordered_map<std::string, Texture2D*> textures;
+	int numberOfBezierInstances = 3;
+	int  numberOfBezierPoints=15;
 	float maxLevelOfTranslate=10.0f;
 	glm::vec3 controlP1;
 	glm::vec3 controlP2;
@@ -39,6 +40,9 @@ private:
 	glm::vec3 controlP8;
 	glm::vec3 controlP9;
 	glm::vec3 controlP10;
+	glm::vec3 controlP11;
+	glm::vec3 controlP12;
+	glm::vec3 controlP13;
 
 };
 
