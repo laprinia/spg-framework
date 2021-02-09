@@ -28,4 +28,5 @@ class Laborator4 : public SimpleScene
 
 	private:
 		int cubeMapTextureID;
+		std::unordered_map<std::string, Texture2D*> textures;
 };

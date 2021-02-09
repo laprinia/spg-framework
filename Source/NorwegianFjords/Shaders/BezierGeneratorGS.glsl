@@ -1,7 +1,7 @@
 #version 430
 layout(lines) in;
 
-layout(triangle_strip, max_vertices = 85) out;
+layout(triangle_strip, max_vertices = 80) out;
 
 uniform mat4 View;
 uniform mat4 Projection;

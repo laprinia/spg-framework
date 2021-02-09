@@ -11,6 +11,7 @@ uniform mat4 Projection;
 
 layout(location = 0) out vec3 world_position;
 layout(location = 1) out vec3 world_normal;
+layout(location = 2) out vec2 v_texture_coord;
 
 void main()
 {

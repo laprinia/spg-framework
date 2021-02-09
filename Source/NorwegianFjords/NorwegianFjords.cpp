@@ -136,7 +136,9 @@ void NorwegianFjords::Init() {
 		meshes["riverSurface4"]->SetDrawMode(GL_LINES);
 
 		{
-			TextureManager::LoadTexture(RESOURCE_PATH::TEXTURES, "water.jpg");
+			Texture2D* texture = new Texture2D();
+			texture->Load2D((RESOURCE_PATH::TEXTURES + "ground.jpg").c_str(), GL_REPEAT);
+			textures["water"] = texture;
 		}
 		{
 			Mesh* mesh = new Mesh("cube");
@@ -144,7 +146,7 @@ void NorwegianFjords::Init() {
 			mesh->UseMaterials(false);
 			meshes[mesh->GetMeshID()] = mesh;
 		}
-		std::string cubeTexturePath = RESOURCE_PATH::TEXTURES + "Cube/";
+		std::string cubeTexturePath = RESOURCE_PATH::TEXTURES + "Norwegian/";
 		cubeMapTexture = UploadCubeMapTexture(
 			cubeTexturePath + "posx.png",
 			cubeTexturePath + "posy.png",
@@ -206,6 +208,14 @@ void NorwegianFjords::Update(float deltaTimeSeconds)
 		glUniformMatrix4fv(shader->loc_view_matrix, 1, GL_FALSE, glm::value_ptr(GetSceneCamera()->GetViewMatrix()));
 		glUniformMatrix4fv(shader->loc_projection_matrix, 1, GL_FALSE, glm::value_ptr(GetSceneCamera()->GetProjectionMatrix()));
 
+		//	WATER TEXTURE
+		glActiveTexture(GL_TEXTURE0);
+		//TODO : Bind the texture1 ID
+		glBindTexture(GL_TEXTURE_2D, textures["water"]->GetTextureID());
+
+		//TODO : Send texture uniform value
+		glUniform1i(glGetUniformLocation(shader->program, "texture_1"), 0);
+
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMapTexture);
 		int loc_texture = shader->GetUniformLocation("texture_cubemap");
@@ -217,9 +227,7 @@ void NorwegianFjords::Update(float deltaTimeSeconds)
 
 	{Shader* shader = shaders["SurfaceGeneration"];
 	 shader->Use();
-	TextureManager::GetTexture("water.jpg")->BindToTextureUnit(GL_TEXTURE0);
-	TextureManager::GetTexture("water.jpg")->SetWrappingMode(GL_CLAMP_TO_EDGE);
-
+	
 	GenerateRiver(meshes["riverSurface"], shader, controlP1, controlP2, controlP3, controlP4);
 	GenerateRiver(meshes["riverSurface2"], shader, controlP4, controlP5, controlP6, controlP7);
 	GenerateRiver(meshes["riverSurface3"], shader, controlP4, controlP8, controlP9, controlP10);

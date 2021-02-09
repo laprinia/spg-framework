@@ -28,6 +28,11 @@ void Laborator4::Init()
 
 	std::string texturePath = RESOURCE_PATH::TEXTURES + "Cube/";
 	std::string shaderPath = "Source/Laboratoare/Laborator4/Shaders/";
+	{
+		Texture2D* texture = new Texture2D();
+		texture->Load2D((RESOURCE_PATH::TEXTURES + "ground.jpg").c_str(), GL_REPEAT);
+		textures["water"] = texture;
+	}
 
 	{
 		Mesh* mesh = new Mesh("bunny");
@@ -130,6 +135,17 @@ void Laborator4::Update(float deltaTimeSeconds)
 
 		int loc_camera = shader->GetUniformLocation("camera_position");
 		glUniform3f(loc_camera, cameraPosition.x, cameraPosition.y, cameraPosition.z);
+
+		//	WATER TEXTURE
+		glActiveTexture(GL_TEXTURE1);
+		//TODO : Bind the texture1 ID
+		glBindTexture(GL_TEXTURE_2D, textures["water"]->GetTextureID());
+
+		//TODO : Send texture uniform value
+		glUniform1i(glGetUniformLocation(shader->program, "texture_1"), 0);
+
+
+
 
 		meshes["cube2"]->Render();
 	}

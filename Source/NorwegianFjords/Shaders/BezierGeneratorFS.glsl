@@ -11,18 +11,18 @@ uniform vec3 camera_position;
 uniform samplerCube texture_cubemap;
 
 vec3 V;
-vec3 reflection()
+vec4 reflection()
 {
     vec3 reflection=reflect(V, world_normal);
 
-    return texture(texture_cubemap, reflection).xyz;
+    return texture(texture_cubemap, reflection,1);
 }
 
 
-vec3 refraction( float refractive_index)
+vec4 refraction( float refractive_index)
 {
     vec3 refraction=refract(-V,world_normal,refractive_index);
-    return texture(texture_cubemap,refraction).xyz;
+    return texture(texture_cubemap,refraction,1);
 }
 
 float lerp(float a, float b, float w)
@@ -33,12 +33,15 @@ float lerp(float a, float b, float w)
 void main()
 {
  
-   vec3 color = texture(texture_1, texture_coord).xyz;
+   vec4 color = texture(texture_1, texture_coord);
     
    V=normalize(camera_position - world_position);
    
-   vec3 cubeColor=mix(refraction(1.0/1.33),reflection(),0.5);
-   vec3 finalColor=mix(color,cubeColor,0.5);
+   vec4 cubeColor=refraction(1.0/1.33);
+   cubeColor+=reflection();
+  // vec4 actualColor=vec4(color.r,color.g,color.b,1);
+  //vec4 newNew=vec4(lerp(color.r,cubeColor.r,0.1),lerp(color.g,cubeColor.g,0.1),lerp(color.b,cubeColor.b,0.1),1);
+  
+   out_color = cubeColor;
 
-   out_color = vec4(finalColor,1);
 }

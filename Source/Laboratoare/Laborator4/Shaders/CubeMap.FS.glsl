@@ -2,6 +2,7 @@
 
 layout(location = 0) in vec3 world_position;
 layout(location = 1) in vec3 world_normal;
+layout(location = 2) in vec2 v_texture_coord;
 
 uniform sampler2D texture_1;
 uniform samplerCube texture_cubemap;
