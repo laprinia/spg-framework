@@ -1,7 +1,7 @@
 #version 430
 layout(lines) in;
 
-layout(triangle_strip, max_vertices = 170) out;
+layout(triangle_strip, max_vertices = 85) out;
 
 uniform mat4 View;
 uniform mat4 Projection;
@@ -9,7 +9,12 @@ uniform vec3 control_p1, control_p2, control_p3, control_p4;
 uniform int instanceNumber;
 uniform int pointsNumber;
 
+//layout(location = 1) in vec3 world_position;
+//layout(location = 2) in vec3 world_normal;
+
 layout(location = 0) out vec2 texture_coord;
+layout(location = 1) out vec3 world_position;
+layout(location = 2) out vec3 world_normal;
 
 in int instance[2];
 
@@ -41,19 +46,27 @@ void main() {
 
         gl_Position = Projection * View * vec4(p1 + offset, 1);
         texture_coord = vec2(0, 0);
+        world_normal = normalize(p1+offset);
+        world_position=p1 + offset;
         EmitVertex();
 
         gl_Position = Projection * View * vec4(p3 + offset3, 1);
         texture_coord = vec2(1, 0);
+        world_normal = normalize(p3+offset3);
+        world_position=p3 + offset3;
         EmitVertex();
 
 
         gl_Position = Projection * View * vec4(p2 + offset2, 1);
         texture_coord = vec2(0, 1);
+        world_normal = normalize(p2+offset2);
+        world_position=p2 + offset2;
         EmitVertex();
 
         gl_Position = Projection * View * vec4(p4 + offset4, 1);
         texture_coord = vec2(1, 1);
+        world_normal = normalize(p4+offset4);
+        world_position=p4 + offset4;
         EmitVertex();
         
     }

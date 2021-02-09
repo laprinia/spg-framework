@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <iostream>
 #include <vector>
+#include <stb/stb_image.h>
 
 NorwegianFjords::NorwegianFjords()
 {
@@ -19,10 +20,11 @@ float NorwegianFjords::GenerateRandomFloat(float lower, float upper) {
 	float r = random * diff;
 	return lower + r;
 }
+
 void NorwegianFjords::GenerateControlPoints() {
 	//main branch
 	controlP1 = glm::vec3(0.0, 0.0, 0.0);
-	controlP2 = glm::vec3(GenerateRandomFloat(-5, 5), 0, controlP1.z +GenerateRandomFloat(-5, -1));
+	controlP2 = glm::vec3(GenerateRandomFloat(-5, 5), 0, controlP1.z + GenerateRandomFloat(-5, -1));
 	controlP3 = glm::vec3(GenerateRandomFloat(-5, 5), 0, controlP2.z + GenerateRandomFloat(-5, -1));
 	controlP4 = glm::vec3(GenerateRandomFloat(-5, 5), 0, controlP3.z + GenerateRandomFloat(-5, -1));
 	//second branch
@@ -30,13 +32,13 @@ void NorwegianFjords::GenerateControlPoints() {
 	controlP6 = glm::vec3(GenerateRandomFloat(-5, 5), 0, controlP5.z + GenerateRandomFloat(-5, -1));
 	controlP7 = glm::vec3(GenerateRandomFloat(-5, 5), 0, controlP6.z + GenerateRandomFloat(-5, -1));
 	//third branch
-	controlP8 = glm::vec3(controlP5.x+GenerateRandomFloat(5, 10), 0.4f, controlP4.z + GenerateRandomFloat(-5, -1));
-	controlP9 = glm::vec3(controlP6.x+GenerateRandomFloat(5, 10), 0.0f, controlP8.z + GenerateRandomFloat(-5, -1));
-	controlP10 = glm::vec3(controlP7.x+GenerateRandomFloat(5, 10), 0.0f, controlP9.z + GenerateRandomFloat(-5, -1));
+	controlP8 = glm::vec3(controlP5.x + GenerateRandomFloat(5, 10), 0.4f, controlP4.z + GenerateRandomFloat(-5, -1));
+	controlP9 = glm::vec3(controlP6.x + GenerateRandomFloat(5, 10), 0.0f, controlP8.z + GenerateRandomFloat(-5, -1));
+	controlP10 = glm::vec3(controlP7.x + GenerateRandomFloat(5, 10), 0.0f, controlP9.z + GenerateRandomFloat(-5, -1));
 	//fourth branch
-	controlP11 = glm::vec3(controlP5.x-GenerateRandomFloat(5, 10), 0.6f, controlP4.z + GenerateRandomFloat(-5, -1));
-	controlP12 = glm::vec3(controlP6.x-GenerateRandomFloat(5, 10), 0.0f, controlP11.z + GenerateRandomFloat(-5, -1));
-	controlP13 = glm::vec3(controlP7.x-GenerateRandomFloat(5, 10), 0.0f, controlP12.z + GenerateRandomFloat(-5, -1));
+	controlP11 = glm::vec3(controlP5.x - GenerateRandomFloat(5, 10), 0.6f, controlP4.z + GenerateRandomFloat(-5, -1));
+	controlP12 = glm::vec3(controlP6.x - GenerateRandomFloat(5, 10), 0.0f, controlP11.z + GenerateRandomFloat(-5, -1));
+	controlP13 = glm::vec3(controlP7.x - GenerateRandomFloat(5, 10), 0.0f, controlP12.z + GenerateRandomFloat(-5, -1));
 
 }
 
@@ -49,6 +51,14 @@ void NorwegianFjords::Init() {
 
 
 	std::string shaderPath = "Source/NorwegianFjords/Shaders/";
+	{
+		Shader* shader = new Shader("RegularShader");
+		shader->AddShader(shaderPath + "RegularVS.glsl", GL_VERTEX_SHADER);
+		shader->AddShader(shaderPath + "RegularFS.glsl", GL_FRAGMENT_SHADER);
+		shader->CreateAndLink();
+		shaders[shader->GetName()] = shader;
+	}
+
 	{
 		Shader* shader = new Shader("SurfaceGeneration");
 		shader->AddShader(shaderPath + "BezierGeneratorVS.glsl", GL_VERTEX_SHADER);
@@ -124,10 +134,25 @@ void NorwegianFjords::Init() {
 		meshes["riverSurface4"] = new Mesh("riverSurface4");
 		meshes["riverSurface4"]->InitFromData(vertices4, indices4);
 		meshes["riverSurface4"]->SetDrawMode(GL_LINES);
-		
+
 		{
 			TextureManager::LoadTexture(RESOURCE_PATH::TEXTURES, "water.jpg");
 		}
+		{
+			Mesh* mesh = new Mesh("cube");
+			mesh->LoadMesh(RESOURCE_PATH::MODELS + "Primitives", "box.obj");
+			mesh->UseMaterials(false);
+			meshes[mesh->GetMeshID()] = mesh;
+		}
+		std::string cubeTexturePath = RESOURCE_PATH::TEXTURES + "Cube/";
+		cubeMapTexture = UploadCubeMapTexture(
+			cubeTexturePath + "posx.png",
+			cubeTexturePath + "posy.png",
+			cubeTexturePath + "posz.png",
+			cubeTexturePath + "negx.png",
+			cubeTexturePath + "negy.png",
+			cubeTexturePath + "negz.png"
+		);
 	}
 
 
@@ -152,7 +177,15 @@ void NorwegianFjords::GenerateRiver(Mesh* mesh, Shader* shader, glm::vec3 point1
 	glUniform1i(glGetUniformLocation(shader->program, "instanceNumber"), numberOfBezierInstances);
 	glUniform1i(glGetUniformLocation(shader->program, "pointsNumber"), numberOfBezierPoints);
 
+	auto cameraPosition = GetSceneCamera()->transform->GetWorldPosition();
 
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMapTexture);
+	int loc_texture = shader->GetUniformLocation("texture_cubemap");
+	glUniform1i(loc_texture, 0);
+
+	int loc_camera = shader->GetUniformLocation("camera_position");
+	glUniform3f(loc_camera, cameraPosition.x, cameraPosition.y, cameraPosition.z);
 
 
 	RenderInstancedMesh(mesh, shader, glm::mat4(1), numberOfBezierInstances);
@@ -161,18 +194,92 @@ void NorwegianFjords::Update(float deltaTimeSeconds)
 {
 
 	ClearScreen();
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	glEnable(GL_BLEND);
-	Shader* shader = shaders["SurfaceGeneration"];
-	shader->Use();
+	{
+		Shader* shader = shaders["RegularShader"];
+		shader->Use();
+
+		glm::mat4 modelMatrix = glm::scale(glm::mat4(1), glm::vec3(100));
+
+		glUniformMatrix4fv(shader->loc_model_matrix, 1, GL_FALSE, glm::value_ptr(modelMatrix));
+		glUniformMatrix4fv(shader->loc_view_matrix, 1, GL_FALSE, glm::value_ptr(GetSceneCamera()->GetViewMatrix()));
+		glUniformMatrix4fv(shader->loc_projection_matrix, 1, GL_FALSE, glm::value_ptr(GetSceneCamera()->GetProjectionMatrix()));
+
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMapTexture);
+		int loc_texture = shader->GetUniformLocation("texture_cubemap");
+		glUniform1i(loc_texture, 0);
+
+		meshes["cube"]->Render();
+
+	}
+
+	{Shader* shader = shaders["SurfaceGeneration"];
+	 shader->Use();
 	TextureManager::GetTexture("water.jpg")->BindToTextureUnit(GL_TEXTURE0);
-	TextureManager::GetTexture("water.jpg")->SetWrappingMode(GL_MIRRORED_REPEAT);
+	TextureManager::GetTexture("water.jpg")->SetWrappingMode(GL_CLAMP_TO_EDGE);
+
 	GenerateRiver(meshes["riverSurface"], shader, controlP1, controlP2, controlP3, controlP4);
 	GenerateRiver(meshes["riverSurface2"], shader, controlP4, controlP5, controlP6, controlP7);
 	GenerateRiver(meshes["riverSurface3"], shader, controlP4, controlP8, controlP9, controlP10);
 	GenerateRiver(meshes["riverSurface4"], shader, controlP4, controlP11, controlP12, controlP13);
 
-	
+	}
+
+}
+
+unsigned int NorwegianFjords::UploadCubeMapTexture(const std::string& posx, const std::string& posy, const std::string& posz, const std::string& negx, const std::string& negy, const std::string& negz)
+{
+	int width, height, chn;
+
+	unsigned char* data_posx = stbi_load(posx.c_str(), &width, &height, &chn, 0);
+	unsigned char* data_posy = stbi_load(posy.c_str(), &width, &height, &chn, 0);
+	unsigned char* data_posz = stbi_load(posz.c_str(), &width, &height, &chn, 0);
+	unsigned char* data_negx = stbi_load(negx.c_str(), &width, &height, &chn, 0);
+	unsigned char* data_negy = stbi_load(negy.c_str(), &width, &height, &chn, 0);
+	unsigned char* data_negz = stbi_load(negz.c_str(), &width, &height, &chn, 0);
+
+	// TODO - create OpenGL texture
+	unsigned int textureID = 0;
+	glGenTextures(1, &textureID);
+
+	// TODO - bind the texture
+	glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
+
+	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
+
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+	float maxAnisotropy;
+	glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &maxAnisotropy);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, maxAnisotropy);
+
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+	// TODO - load texture information for each face
+	glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data_posx);
+	glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_X, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data_negx);
+	glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Y, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data_posy);
+	glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data_negy);
+	glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Z, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data_posz);
+	glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data_negz);
+
+
+	glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
+
+	SAFE_FREE(data_posx);
+	SAFE_FREE(data_posy);
+	SAFE_FREE(data_posz);
+	SAFE_FREE(data_negx);
+	SAFE_FREE(data_negy);
+	SAFE_FREE(data_negz);
+
+	return textureID;
 }
 
 void NorwegianFjords::RenderInstancedMesh(Mesh* mesh, Shader* shader, const glm::mat4& modelMatrix, int instances) {

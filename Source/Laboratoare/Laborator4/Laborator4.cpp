@@ -42,6 +42,12 @@ void Laborator4::Init()
 		mesh->UseMaterials(false);
 		meshes[mesh->GetMeshID()] = mesh;
 	}
+	{
+		Mesh* mesh = new Mesh("cube2");
+		mesh->LoadMesh(RESOURCE_PATH::MODELS + "Primitives", "box.obj");
+		mesh->UseMaterials(false);
+		meshes[mesh->GetMeshID()] = mesh;
+	}
 
 	// Create a shader program for rendering to texture
 	{
@@ -109,7 +115,7 @@ void Laborator4::Update(float deltaTimeSeconds)
 		Shader *shader = shaders["CubeMap"];
 		shader->Use();
 
-		glm::mat4 modelMatrix = glm::scale(glm::mat4(1), glm::vec3(0.1f));
+		glm::mat4 modelMatrix = glm::scale(glm::mat4(1), glm::vec3(2.0f));
 
 		glUniformMatrix4fv(shader->loc_model_matrix, 1, GL_FALSE, glm::value_ptr(modelMatrix));
 		glUniformMatrix4fv(shader->loc_view_matrix, 1, GL_FALSE, glm::value_ptr(camera->GetViewMatrix()));
@@ -125,7 +131,7 @@ void Laborator4::Update(float deltaTimeSeconds)
 		int loc_camera = shader->GetUniformLocation("camera_position");
 		glUniform3f(loc_camera, cameraPosition.x, cameraPosition.y, cameraPosition.z);
 
-		meshes["bunny"]->Render();
+		meshes["cube2"]->Render();
 	}
 }
 

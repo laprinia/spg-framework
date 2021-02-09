@@ -106,6 +106,8 @@
     <None Include="..\Source\NorwegianFjords\Shaders\BezierGeneratorFS.glsl" />
     <None Include="..\Source\NorwegianFjords\Shaders\BezierGeneratorGS.glsl" />
     <None Include="..\Source\NorwegianFjords\Shaders\BezierGeneratorVS.glsl" />
+    <None Include="..\Source\NorwegianFjords\Shaders\RegularFS.glsl" />
+    <None Include="..\Source\NorwegianFjords\Shaders\RegularVS.glsl" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{FB43B467-42CC-458C-9556-597B025830F7}</ProjectGuid>

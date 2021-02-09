@@ -323,5 +323,11 @@
     <None Include="..\Source\NorwegianFjords\Shaders\BezierGeneratorVS.glsl">
       <Filter>NorwegianFjords\Shaders</Filter>
     </None>
+    <None Include="..\Source\NorwegianFjords\Shaders\RegularFS.glsl">
+      <Filter>NorwegianFjords\Shaders</Filter>
+    </None>
+    <None Include="..\Source\NorwegianFjords\Shaders\RegularVS.glsl">
+      <Filter>NorwegianFjords\Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

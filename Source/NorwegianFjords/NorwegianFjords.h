@@ -25,8 +25,10 @@ private:
 	void GenerateRiver(Mesh* mesh, Shader* shader,glm::vec3 point1, glm::vec3 point2, glm::vec3 point3, glm::vec3 point4);
 	void GenerateControlPoints();
 	float GenerateRandomFloat(float lower, float upper);
+	unsigned int UploadCubeMapTexture(const std::string& posx, const std::string& posy, const std::string& posz, const std::string& negx, const std::string& negy, const std::string& negz);
 
 	std::unordered_map<std::string, Texture2D*> textures;
+	int cubeMapTexture;
 	int numberOfBezierInstances = 3;
 	int  numberOfBezierPoints=15;
 	float maxLevelOfTranslate=10.0f;
