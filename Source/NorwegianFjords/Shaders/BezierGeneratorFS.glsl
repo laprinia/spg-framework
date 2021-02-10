@@ -37,11 +37,11 @@ void main()
     
    V=normalize(camera_position - world_position);
    
-   vec4 cubeColor=refraction(1.0/1.33);
-   cubeColor+=reflection();
+   vec4 cubeColor=mix(refraction(1.0/1.33),reflection(),0.5);
+ 
   // vec4 actualColor=vec4(color.r,color.g,color.b,1);
-  //vec4 newNew=vec4(lerp(color.r,cubeColor.r,0.1),lerp(color.g,cubeColor.g,0.1),lerp(color.b,cubeColor.b,0.1),1);
-  
+   vec4 newNew=vec4(lerp(color.r,cubeColor.r,0.1),lerp(color.g,cubeColor.g,0.1),lerp(color.b,cubeColor.b,0.1),1);
+  vec4 other=vec4(newNew.x,newNew.y,newNew.z, 1);
    out_color = cubeColor;
 
 }

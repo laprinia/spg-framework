@@ -22,7 +22,7 @@ private:
 	void OnMouseScroll(int mouseX, int mouseY, int offsetX, int offsetY) override;
 	void OnWindowResize(int width, int height) override;
 	void RenderInstancedMesh(Mesh* mesh, Shader* shader, const glm::mat4& modelMatrix, int instances);
-	void GenerateRiver(Mesh* mesh, Shader* shader,glm::vec3 point1, glm::vec3 point2, glm::vec3 point3, glm::vec3 point4);
+	void GenerateRiver(Mesh* mesh, Shader* shader);
 	void GenerateControlPoints();
 	float GenerateRandomFloat(float lower, float upper);
 	unsigned int UploadCubeMapTexture(const std::string& posx, const std::string& posy, const std::string& posz, const std::string& negx, const std::string& negy, const std::string& negz);
@@ -30,7 +30,7 @@ private:
 	std::unordered_map<std::string, Texture2D*> textures;
 	int cubeMapTexture;
 	int numberOfBezierInstances = 3;
-	int  numberOfBezierPoints=15;
+	int  numberOfBezierPoints=5;
 	float maxLevelOfTranslate=10.0f;
 	glm::vec3 controlP1;
 	glm::vec3 controlP2;

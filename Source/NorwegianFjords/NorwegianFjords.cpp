@@ -137,7 +137,7 @@ void NorwegianFjords::Init() {
 
 		{
 			Texture2D* texture = new Texture2D();
-			texture->Load2D((RESOURCE_PATH::TEXTURES + "ground.jpg").c_str(), GL_REPEAT);
+			texture->Load2D((RESOURCE_PATH::TEXTURES + "water.jpg").c_str(), GL_REPEAT);
 			textures["water"] = texture;
 		}
 		{
@@ -169,13 +169,23 @@ void NorwegianFjords::FrameStart()
 	glViewport(0, 0, resolution.x, resolution.y);
 }
 
-void NorwegianFjords::GenerateRiver(Mesh* mesh, Shader* shader, glm::vec3 point1, glm::vec3 point2, glm::vec3 point3, glm::vec3 point4)
+void NorwegianFjords::GenerateRiver(Mesh* mesh, Shader* shader)
 {
 
-	glUniform3f(glGetUniformLocation(shader->program, "control_p1"), point1.x, point1.y, point1.z);
-	glUniform3f(glGetUniformLocation(shader->program, "control_p2"), point2.x, point2.y, point2.z);
-	glUniform3f(glGetUniformLocation(shader->program, "control_p3"), point3.x, point3.y, point3.z);
-	glUniform3f(glGetUniformLocation(shader->program, "control_p4"), point4.x, point4.y, point4.z);
+	glUniform3f(glGetUniformLocation(shader->program, "control_p1"), controlP1.x, controlP1.y, controlP1.z);
+	glUniform3f(glGetUniformLocation(shader->program, "control_p2"), controlP2.x, controlP2.y, controlP2.z);
+	glUniform3f(glGetUniformLocation(shader->program, "control_p3"), controlP3.x, controlP3.y, controlP3.z);
+	glUniform3f(glGetUniformLocation(shader->program, "control_p4"), controlP4.x, controlP4.y, controlP4.z);
+	glUniform3f(glGetUniformLocation(shader->program, "control_p5"), controlP5.x, controlP5.y, controlP5.z);
+	glUniform3f(glGetUniformLocation(shader->program, "control_p6"), controlP6.x, controlP6.y, controlP6.z);
+	glUniform3f(glGetUniformLocation(shader->program, "control_p7"), controlP7.x, controlP7.y, controlP7.z);
+	glUniform3f(glGetUniformLocation(shader->program, "control_p8"), controlP8.x, controlP8.y, controlP8.z);
+	glUniform3f(glGetUniformLocation(shader->program, "control_p9"), controlP9.x, controlP9.y, controlP9.z);
+	glUniform3f(glGetUniformLocation(shader->program, "control_p10"), controlP10.x, controlP10.y, controlP10.z);
+	glUniform3f(glGetUniformLocation(shader->program, "control_p11"), controlP11.x, controlP11.y, controlP11.z);
+	glUniform3f(glGetUniformLocation(shader->program, "control_p12"), controlP12.x, controlP12.y, controlP12.z);
+	glUniform3f(glGetUniformLocation(shader->program, "control_p13"), controlP13.x, controlP13.y, controlP13.z);
+
 	glUniform1i(glGetUniformLocation(shader->program, "instanceNumber"), numberOfBezierInstances);
 	glUniform1i(glGetUniformLocation(shader->program, "pointsNumber"), numberOfBezierPoints);
 
@@ -208,12 +218,10 @@ void NorwegianFjords::Update(float deltaTimeSeconds)
 		glUniformMatrix4fv(shader->loc_view_matrix, 1, GL_FALSE, glm::value_ptr(GetSceneCamera()->GetViewMatrix()));
 		glUniformMatrix4fv(shader->loc_projection_matrix, 1, GL_FALSE, glm::value_ptr(GetSceneCamera()->GetProjectionMatrix()));
 
-		//	WATER TEXTURE
 		glActiveTexture(GL_TEXTURE0);
-		//TODO : Bind the texture1 ID
+	
 		glBindTexture(GL_TEXTURE_2D, textures["water"]->GetTextureID());
 
-		//TODO : Send texture uniform value
 		glUniform1i(glGetUniformLocation(shader->program, "texture_1"), 0);
 
 		glActiveTexture(GL_TEXTURE1);
@@ -228,10 +236,8 @@ void NorwegianFjords::Update(float deltaTimeSeconds)
 	{Shader* shader = shaders["SurfaceGeneration"];
 	 shader->Use();
 	
-	GenerateRiver(meshes["riverSurface"], shader, controlP1, controlP2, controlP3, controlP4);
-	GenerateRiver(meshes["riverSurface2"], shader, controlP4, controlP5, controlP6, controlP7);
-	GenerateRiver(meshes["riverSurface3"], shader, controlP4, controlP8, controlP9, controlP10);
-	GenerateRiver(meshes["riverSurface4"], shader, controlP4, controlP11, controlP12, controlP13);
+	GenerateRiver(meshes["riverSurface"], shader);
+
 
 	}
 
@@ -313,7 +319,7 @@ void NorwegianFjords::RenderInstancedMesh(Mesh* mesh, Shader* shader, const glm:
 
 	glBindVertexArray(mesh->GetBuffers()->VAO);
 	glDrawElementsInstanced(mesh->GetDrawMode(), static_cast<int>(mesh->indices.size()), GL_UNSIGNED_INT, (void*)0, instances);
-
+	
 
 }
 

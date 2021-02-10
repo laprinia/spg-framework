@@ -12,14 +12,12 @@ uniform mat4 Projection;
 //layout(location = 2) out vec3 world_normal;
 
 out int instance;
-
+out int isReflectiveRiver;
 void main()
 {
 	instance = gl_InstanceID;
-	//world_position = (Model * vec4(v_position, 1)).xyz;
-    //world_normal = normalize(mat3(Model) * v_normal);
-
-    gl_Position = Model * vec4(v_position, 1);
+	isReflectiveRiver=1;
+    gl_Position = Model * vec4(v_position.x,v_position.y,v_position.z, 1);
 }
 
 
