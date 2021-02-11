@@ -22,20 +22,19 @@ vec3 cubicBezier(float t,vec3 cp1,vec3 cp2,vec3 cp3, vec3 cp4)
 	return cp1 * pow((1 - t), 3) + cp2 * 3 * t * pow((1 - t), 2) + cp3 * 3 * pow(t, 2) * (1 - t) + cp4 * pow(t, 3);
 }
 
-void createMountainInstanced(vec3 startingPoint1, vec3 startingPoint2, float geometryDisplacement, float widthDisplacement) {
+void createMountainInstanced(int isFlipped,vec3 startingPoint1, vec3 startingPoint2, float geometryDisplacement) {
 
-       float instanceDisplacement= widthDisplacement-1;
-       if(instance[0]==0){
-       instanceDisplacement=0;
-       }
-       gl_Position = Projection * View * vec4(startingPoint1.x+geometryDisplacement+instanceDisplacement, instance[0]==1?startingPoint1.y+5:startingPoint1.y,startingPoint1.z, 1);
+       float instanceDisplacement=isFlipped==1?-1:1;
+       geometryDisplacement=isFlipped==1?instance[0]* geometryDisplacement:geometryDisplacement; 
+      
+       gl_Position = Projection * View * vec4(startingPoint1.x+geometryDisplacement, instance[0]==1?startingPoint1.y+5:startingPoint1.y,startingPoint1.z, 1);
        texture_coord = vec2(0, 0);
        world_normal = normalize(startingPoint1);
        world_position=startingPoint1;
        isReflective=0;
        EmitVertex();
 
-       vec3 newPoint1=vec3(startingPoint1.x+widthDisplacement+geometryDisplacement, instance[0]==0?startingPoint1.y+5:startingPoint1.y, startingPoint1.z);
+       vec3 newPoint1=vec3(startingPoint1.x+geometryDisplacement+instanceDisplacement, instance[0]==0?startingPoint1.y+5:startingPoint1.y, startingPoint1.z);
 
        gl_Position = Projection * View * vec4(newPoint1,1);
        texture_coord = vec2(1, 0);
@@ -44,14 +43,14 @@ void createMountainInstanced(vec3 startingPoint1, vec3 startingPoint2, float geo
        isReflective=0;
        EmitVertex();
 
-       gl_Position = Projection * View * vec4(startingPoint2.x+geometryDisplacement+instanceDisplacement,instance[0]==1?startingPoint2.y+5:startingPoint2.y,startingPoint2.z, 1);
+       gl_Position = Projection * View * vec4(startingPoint2.x+geometryDisplacement,instance[0]==1?startingPoint2.y+5:startingPoint2.y,startingPoint2.z, 1);
        texture_coord = vec2(0, 1);
        world_normal = normalize(startingPoint2);
        world_position=startingPoint2;
        isReflective=0;
        EmitVertex();
       
-       vec3 newPoint2=vec3(startingPoint2.x+widthDisplacement+geometryDisplacement, instance[0]==0?startingPoint2.y+5:startingPoint2.y, startingPoint2.z);
+       vec3 newPoint2=vec3(startingPoint2.x+geometryDisplacement+instanceDisplacement, instance[0]==0?startingPoint2.y+5:startingPoint2.y, startingPoint2.z);
 
        gl_Position = Projection * View * vec4(newPoint2,1);
        texture_coord = vec2(1,1);
@@ -59,6 +58,8 @@ void createMountainInstanced(vec3 startingPoint1, vec3 startingPoint2, float geo
        world_position=newPoint2;
        isReflective=0;
        EmitVertex();
+       
+      
        EndPrimitive();
     
 }
@@ -109,9 +110,9 @@ void createRiverBranch(vec3 cp1,vec3 cp2, vec3 cp3,vec3 cp4)
 
         EndPrimitive();
         //right mountain
-        createMountainInstanced(p3+offset3, p4+offset4,2,5);
+        createMountainInstanced(0,p3+offset3, p4+offset4,2);
         //left mountain
-
+        createMountainInstanced(1,p1+offset, p2+offset2,-2);
     }
     
 }
@@ -125,8 +126,7 @@ void main() {
     //se apeleaza fata de fiecare
     
     //createRiverBranch(control_p4, control_p5, control_p6, control_p7);
-   //createRiverBranch(control_p4, control_p8, control_p9, control_p10);
+    //createRiverBranch(control_p4, control_p8, control_p9, control_p10);
     //createRiverBranch(control_p4, control_p11, control_p12, control_p13);
-    
     
 }

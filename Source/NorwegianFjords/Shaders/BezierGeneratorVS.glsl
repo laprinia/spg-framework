@@ -16,6 +16,7 @@ void main()
 {
 
 	instance = gl_InstanceID;
+
     gl_Position = Model * vec4(v_position.x,v_position.y,v_position.z, 1);
 }
 

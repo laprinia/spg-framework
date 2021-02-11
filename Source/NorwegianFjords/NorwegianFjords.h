@@ -30,7 +30,7 @@ private:
 	std::unordered_map<std::string, Texture2D*> textures;
 	int cubeMapTexture;
 	int numberOfBezierInstances = 3;
-	int  numberOfBezierPoints=2;
+	int  numberOfBezierPoints=3;
 	float maxLevelOfTranslate=10.0f;
 	glm::vec3 controlP1;
 	glm::vec3 controlP2;
