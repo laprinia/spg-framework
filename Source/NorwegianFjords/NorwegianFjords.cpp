@@ -87,58 +87,14 @@ void NorwegianFjords::Init() {
 		meshes["riverSurface"]->InitFromData(vertices, indices);
 		meshes["riverSurface"]->SetDrawMode(GL_LINES);
 
-		std::vector<VertexFormat> vertices2
-		{
-			VertexFormat(glm::vec3(controlP4.x, controlP4.y,  controlP4.z), glm::vec3(0, 0, 1)),
-			VertexFormat(glm::vec3(controlP7.x, controlP7.y,  controlP7.z), glm::vec3(0, 0, 1))
-		};
-
-
-		std::vector<unsigned short> indices2 =
-		{
-			0, 1
-		};
-
-		meshes["riverSurface2"] = new Mesh("riverSurface2");
-		meshes["riverSurface2"]->InitFromData(vertices2, indices2);
-		meshes["riverSurface2"]->SetDrawMode(GL_LINES);
-
-		std::vector<VertexFormat> vertices3
-		{
-			VertexFormat(glm::vec3(controlP4.x, controlP4.y,  controlP4.z), glm::vec3(0, 0, 1)),
-			VertexFormat(glm::vec3(controlP10.x, controlP10.y,  controlP10.z), glm::vec3(0, 0, 1))
-		};
-
-
-		std::vector<unsigned short> indices3 =
-		{
-			0, 1
-		};
-
-		meshes["riverSurface3"] = new Mesh("riverSurface3");
-		meshes["riverSurface3"]->InitFromData(vertices3, indices3);
-		meshes["riverSurface3"]->SetDrawMode(GL_LINES);
-
-		std::vector<VertexFormat> vertices4
-		{
-			VertexFormat(glm::vec3(controlP4.x, controlP4.y,  controlP4.z), glm::vec3(0, 0, 1)),
-			VertexFormat(glm::vec3(controlP13.x, controlP13.y,  controlP13.z), glm::vec3(0, 0, 1))
-		};
-
-
-		std::vector<unsigned short> indices4 =
-		{
-			0, 1
-		};
-
-		meshes["riverSurface4"] = new Mesh("riverSurface4");
-		meshes["riverSurface4"]->InitFromData(vertices4, indices4);
-		meshes["riverSurface4"]->SetDrawMode(GL_LINES);
-
 		{
 			Texture2D* texture = new Texture2D();
 			texture->Load2D((RESOURCE_PATH::TEXTURES + "water.jpg").c_str(), GL_REPEAT);
 			textures["water"] = texture;
+
+			Texture2D* texture2 = new Texture2D();
+			texture2->Load2D((RESOURCE_PATH::TEXTURES + "ground.jpg").c_str(), GL_REPEAT);
+			textures["ground"] = texture2;
 		}
 		{
 			Mesh* mesh = new Mesh("cube");
@@ -169,7 +125,7 @@ void NorwegianFjords::FrameStart()
 	glViewport(0, 0, resolution.x, resolution.y);
 }
 
-void NorwegianFjords::GenerateRiver(Mesh* mesh, Shader* shader)
+void NorwegianFjords::GenerateBezierSurface(Mesh* mesh, Shader* shader, bool isRiver)
 {
 
 	glUniform3f(glGetUniformLocation(shader->program, "control_p1"), controlP1.x, controlP1.y, controlP1.z);
@@ -190,14 +146,30 @@ void NorwegianFjords::GenerateRiver(Mesh* mesh, Shader* shader)
 	glUniform1i(glGetUniformLocation(shader->program, "pointsNumber"), numberOfBezierPoints);
 
 	auto cameraPosition = GetSceneCamera()->transform->GetWorldPosition();
+	//water text
+	glActiveTexture(GL_TEXTURE0);
 
+	glBindTexture(GL_TEXTURE_2D, textures["water"]->GetTextureID());
+
+	glUniform1i(glGetUniformLocation(shader->program, "texture_1"), 0);
+	
+	//ground text
 	glActiveTexture(GL_TEXTURE1);
+
+	glBindTexture(GL_TEXTURE_2D, textures["ground"]->GetTextureID());
+
+	glUniform1i(glGetUniformLocation(shader->program, "texture_2"), 1);
+
+
+	//cubemap
+	glActiveTexture(GL_TEXTURE2);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMapTexture);
 	int loc_texture = shader->GetUniformLocation("texture_cubemap");
-	glUniform1i(loc_texture, 0);
+	glUniform1i(loc_texture, 2);
 
 	int loc_camera = shader->GetUniformLocation("camera_position");
 	glUniform3f(loc_camera, cameraPosition.x, cameraPosition.y, cameraPosition.z);
+
 
 
 	RenderInstancedMesh(mesh, shader, glm::mat4(1), numberOfBezierInstances);
@@ -218,13 +190,8 @@ void NorwegianFjords::Update(float deltaTimeSeconds)
 		glUniformMatrix4fv(shader->loc_view_matrix, 1, GL_FALSE, glm::value_ptr(GetSceneCamera()->GetViewMatrix()));
 		glUniformMatrix4fv(shader->loc_projection_matrix, 1, GL_FALSE, glm::value_ptr(GetSceneCamera()->GetProjectionMatrix()));
 
+		
 		glActiveTexture(GL_TEXTURE0);
-	
-		glBindTexture(GL_TEXTURE_2D, textures["water"]->GetTextureID());
-
-		glUniform1i(glGetUniformLocation(shader->program, "texture_1"), 0);
-
-		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMapTexture);
 		int loc_texture = shader->GetUniformLocation("texture_cubemap");
 		glUniform1i(loc_texture, 0);
@@ -235,10 +202,8 @@ void NorwegianFjords::Update(float deltaTimeSeconds)
 
 	{Shader* shader = shaders["SurfaceGeneration"];
 	 shader->Use();
-	
-	GenerateRiver(meshes["riverSurface"], shader);
-
-
+	// GenerateBezierSurface(meshes["riverSurface"], shader,true);
+	 GenerateBezierSurface(meshes["riverSurface"], shader, true);
 	}
 
 }
@@ -325,7 +290,7 @@ void NorwegianFjords::RenderInstancedMesh(Mesh* mesh, Shader* shader, const glm:
 
 void NorwegianFjords::FrameEnd()
 {
-	DrawCoordinatSystem();
+	//rawCoordinatSystem();
 }
 
 void NorwegianFjords::OnInputUpdate(float deltaTime, int mods)
