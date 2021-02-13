@@ -59,7 +59,7 @@ void Laborator5::Init()
 
 	// Load textures
 	{
-		TextureManager::LoadTexture(RESOURCE_PATH::TEXTURES, "water.jpg");
+		TextureManager::LoadTexture(RESOURCE_PATH::TEXTURES, "waterParticle.png");
 	}
 
 	LoadShader("Simple", false);
@@ -84,9 +84,9 @@ void Laborator5::Init()
 		pos.z = (rand() % cubeSize - hSize) / 10.0f;
 
 		glm::vec4 speed(0);
-		speed.x = (rand() % 20 - 10) / 10.0f;
+		speed.x = (rand() % 2 - 1) / 10.0f;
 		speed.z = (rand() % 20 - 10) / 10.0f;
-		speed.y = rand() % 2 + 2.0f;
+		speed.y = rand() % 2/10.0f;
 
 		data[i].SetInitial(pos, speed);
 	}
@@ -110,6 +110,7 @@ void Laborator5::FrameStart()
 
 void Laborator5::Update(float deltaTimeSeconds)
 {
+	
 	glLineWidth(3);
 
 	glEnable(GL_BLEND);
@@ -122,7 +123,7 @@ void Laborator5::Update(float deltaTimeSeconds)
 		if (shader->GetProgramID())
 		{
 			shader->Use();
-			TextureManager::GetTexture("water.jpg")->BindToTextureUnit(GL_TEXTURE0);
+			TextureManager::GetTexture("waterParticle.png")->BindToTextureUnit(GL_TEXTURE0);
 			particleEffect->Render(GetSceneCamera(), shader);
 		}
 	}

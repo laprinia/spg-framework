@@ -4,6 +4,33 @@
 #include <vector>
 #include <stb/stb_image.h>
 
+struct WaterParticle
+{
+	glm::vec4 position;
+	glm::vec4 speed;
+	glm::vec4 initialPosition;
+	glm::vec4 initialSpeed;
+
+	WaterParticle() {};
+
+	WaterParticle(const glm::vec4& position, const glm::vec4& speed)
+	{
+		SetInitial(position, speed);
+	}
+
+	void SetInitial(const glm::vec4& positionPassed, const glm::vec4& speed)
+	{
+		position = positionPassed;
+		initialPosition = position;
+
+		this->speed = speed;
+		initialSpeed = speed;
+	}
+};
+
+ParticleEffect<WaterParticle>* particleEffect;
+SSBO <WaterParticle>* particleSSBO;
+
 NorwegianFjords::NorwegianFjords()
 {
 
@@ -52,9 +79,16 @@ void NorwegianFjords::Init() {
 
 	std::string shaderPath = "Source/NorwegianFjords/Shaders/";
 	{
-		Shader* shader = new Shader("RegularShader");
+		Shader* shader = new Shader("Regular");
 		shader->AddShader(shaderPath + "RegularVS.glsl", GL_VERTEX_SHADER);
 		shader->AddShader(shaderPath + "RegularFS.glsl", GL_FRAGMENT_SHADER);
+		shader->CreateAndLink();
+		shaders[shader->GetName()] = shader;
+	}
+	{
+		Shader* shader = new Shader("Skybox");
+		shader->AddShader(shaderPath + "SkyboxVS.glsl", GL_VERTEX_SHADER);
+		shader->AddShader(shaderPath + "SkyboxFS.glsl", GL_FRAGMENT_SHADER);
 		shader->CreateAndLink();
 		shaders[shader->GetName()] = shader;
 	}
@@ -72,6 +106,14 @@ void NorwegianFjords::Init() {
 		Shader* shader = new Shader("DepthOfField");
 		shader->AddShader(shaderPath + "DepthOfFieldVS.glsl", GL_VERTEX_SHADER);
 		shader->AddShader(shaderPath + "DepthOfFieldFS.glsl", GL_FRAGMENT_SHADER);
+		shader->CreateAndLink();
+		shaders[shader->GetName()] = shader;
+	}
+	{
+		Shader* shader = new Shader("WaterParticle");
+		shader->AddShader(shaderPath + "WaterParticleVS.glsl", GL_VERTEX_SHADER);
+		shader->AddShader(shaderPath + "WaterParticleGS.glsl", GL_GEOMETRY_SHADER);
+		shader->AddShader(shaderPath + "WaterParticleFS.glsl", GL_FRAGMENT_SHADER);
 		shader->CreateAndLink();
 		shaders[shader->GetName()] = shader;
 	}
@@ -104,6 +146,15 @@ void NorwegianFjords::Init() {
 			Texture2D* texture2 = new Texture2D();
 			texture2->Load2D((RESOURCE_PATH::TEXTURES + "ground.jpg").c_str(), GL_REPEAT);
 			textures["ground"] = texture2;
+
+			Texture2D* texture3 = new Texture2D();
+			texture3->Load2D((RESOURCE_PATH::TEXTURES + "boat.png").c_str(), GL_REPEAT);
+			textures["boat"] = texture3;
+
+			Texture2D* texture4 = new Texture2D();
+			texture4->Load2D((RESOURCE_PATH::TEXTURES + "waterParticle.png").c_str(), GL_REPEAT);
+			textures["waterParticle"] = texture4;
+
 		}
 		{
 			Mesh* mesh = new Mesh("cube");
@@ -117,6 +168,14 @@ void NorwegianFjords::Init() {
 			mesh->UseMaterials(false);
 			meshes[mesh->GetMeshID()] = mesh;
 		}
+
+		{
+			Mesh* mesh = new Mesh("boat");
+			mesh->LoadMesh(RESOURCE_PATH::MODELS + "Models", "boat.obj");
+			mesh->UseMaterials(false);
+			meshes[mesh->GetMeshID()] = mesh;
+		}
+
 		std::string cubeTexturePath = RESOURCE_PATH::TEXTURES + "Norwegian/";
 		cubeMapTexture = UploadCubeMapTexture(
 			cubeTexturePath + "posx.png",
@@ -127,7 +186,14 @@ void NorwegianFjords::Init() {
 			cubeTexturePath + "negz.png"
 		);
 	}
-
+	{
+		particleNumber = 1000;
+		particleEffect = new ParticleEffect<WaterParticle>();
+		particleEffect->Generate(particleNumber, true);
+		particleSSBO = particleEffect->GetParticleBuffer();
+		
+		
+	}
 
 }
 
@@ -198,6 +264,30 @@ void NorwegianFjords::CreateFrameBuffer()
 
 }
 
+void NorwegianFjords::ResetParticleData() {
+	
+	std::cout << "resetting data to " << currentBoatPropellerPosition.x;
+	WaterParticle* particleData = const_cast<WaterParticle*>(particleSSBO->GetBuffer());
+	int cubeSize = 2;
+	int hSize = cubeSize / 2;
+
+	for (unsigned int i = 0; i < particleNumber; i++)
+	{
+		glm::vec4 pos(1);
+		pos.x = currentBoatPropellerPosition.x +(rand() % cubeSize - hSize) / 100.0f;
+		pos.y = currentBoatPropellerPosition.y + (rand() % cubeSize - hSize) / 100.0f;
+		pos.z = currentBoatPropellerPosition.z + (rand() % cubeSize - hSize) / 100.0f;
+
+		glm::vec4 speed(0);
+		speed.x = (rand() % 20 - 10) / 100.0f;
+		speed.z = (rand() % 20 - 10) / 100.0f;
+		speed.y = rand() % 2 + 2.0f / 100.0f;
+
+		particleData[i].SetInitial(pos, speed);
+	}
+
+	particleSSBO->SetBufferData(particleData);
+}
 void NorwegianFjords::Update(float deltaTimeSeconds)
 {
 
@@ -209,7 +299,7 @@ void NorwegianFjords::Update(float deltaTimeSeconds)
 	frameBuffer->Bind();
 
 	{
-		Shader* shader = shaders["RegularShader"];
+		Shader* shader = shaders["Skybox"];
 		shader->Use();
 
 		glm::mat4 modelMatrix = glm::scale(glm::mat4(1), glm::vec3(100));
@@ -223,21 +313,66 @@ void NorwegianFjords::Update(float deltaTimeSeconds)
 		glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMapTexture);
 		int loc_texture = shader->GetUniformLocation("texture_cubemap");
 		glUniform1i(loc_texture, 0);
-
 		meshes["cube"]->Render();
 
 	}
+	{
+		Shader* shader = shaders["SurfaceGeneration"];
+		shader->Use();
+		GenerateBezierSurface(meshes["riverSurface"], shader, true);
+
+	}
+	{
+		Shader* shader = shaders["Regular"];
+		shader->Use();
+		glm::vec3 boatPoint=glm::vec3(controlP1.x + 1.5, controlP1.y, controlP1.z - 1.0);
+		glm::mat4 modelMatrix = glm::translate(glm::mat4(1),boatPoint);
+		glm::vec3 propellerPoint = glm::vec3(boatPoint.x, boatPoint.y-0.5, boatPoint.z);
+		//todo save current postion
+		if (currentBoatPropellerPosition.x != propellerPoint.x || currentBoatPropellerPosition.y != propellerPoint.y || currentBoatPropellerPosition.z != propellerPoint.z) {
+			currentBoatPropellerPosition = propellerPoint;
+			ResetParticleData();
+		}
+
+		modelMatrix = glm::rotate(modelMatrix,170*TO_RADIANS,glm::vec3(0,1,0));
+		modelMatrix = glm::scale(modelMatrix, glm::vec3(0.3));
+		glUniformMatrix4fv(shader->loc_model_matrix, 1, GL_FALSE, glm::value_ptr(modelMatrix));
+		glUniformMatrix4fv(shader->loc_view_matrix, 1, GL_FALSE, glm::value_ptr(GetSceneCamera()->GetViewMatrix()));
+		glUniformMatrix4fv(shader->loc_projection_matrix, 1, GL_FALSE, glm::value_ptr(GetSceneCamera()->GetProjectionMatrix()));
+
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, textures["boat"]->GetTextureID());
+		int loc_texture = shader->GetUniformLocation("texture_1");
+		glUniform1i(loc_texture, 0);
+		
+		meshes["boat"]->Render();
+	}
+	glEnable(GL_BLEND);
+	glDisable(GL_DEPTH_TEST);
+	glBlendFunc(GL_ONE, GL_ONE);
+	glBlendEquation(GL_FUNC_ADD);
 
 	{
-	Shader* shader = shaders["SurfaceGeneration"];
-	 shader->Use();
-     GenerateBezierSurface(meshes["riverSurface"], shader, true);
-	
+		
+		Shader* shader = shaders["WaterParticle"];
+		shader->Use();
+
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, textures["waterParticle"]->GetTextureID());
+		int loc_texture = shader->GetUniformLocation("texture_1");
+		glUniform1i(loc_texture, 0);
+
+		particleEffect->Render(GetSceneCamera(), shader);
 	}
 
-	
-    glDepthMask(GL_TRUE);
+	glEnable(GL_DEPTH_TEST);
 	glDisable(GL_BLEND);
+	
+	
+
+	
+   // glDepthMask(GL_TRUE);
+	
 
 	//DoF
 	{

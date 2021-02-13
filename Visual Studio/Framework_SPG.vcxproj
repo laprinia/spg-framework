@@ -110,6 +110,11 @@
     <None Include="..\Source\NorwegianFjords\Shaders\DepthOfFieldVS.glsl" />
     <None Include="..\Source\NorwegianFjords\Shaders\RegularFS.glsl" />
     <None Include="..\Source\NorwegianFjords\Shaders\RegularVS.glsl" />
+    <None Include="..\Source\NorwegianFjords\Shaders\SkyboxFS.glsl" />
+    <None Include="..\Source\NorwegianFjords\Shaders\SkyboxVS.glsl" />
+    <None Include="..\Source\NorwegianFjords\Shaders\WaterParticleFS.glsl" />
+    <None Include="..\Source\NorwegianFjords\Shaders\WaterParticleGS.glsl" />
+    <None Include="..\Source\NorwegianFjords\Shaders\WaterParticleVS.glsl" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{FB43B467-42CC-458C-9556-597B025830F7}</ProjectGuid>

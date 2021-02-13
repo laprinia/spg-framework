@@ -2,12 +2,9 @@
 #define noMountain 0
 #define edgeMountain 1
 #define inBetweenMountain 2
-layout(lines)
-in;
+layout(lines) in;
 
-layout(triangle_strip, max_vertices = 78
-)
-out;
+layout(triangle_strip, max_vertices = 78) out;
 
 uniform mat4
 View;

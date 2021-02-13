@@ -27,7 +27,9 @@ private:
 	float GenerateRandomFloat(float lower, float upper);
 	unsigned int UploadCubeMapTexture(const std::string& posx, const std::string& posy, const std::string& posz, const std::string& negx, const std::string& negy, const std::string& negz);
 	void CreateFrameBuffer();
+	void ResetParticleData();
 
+	
 	std::unordered_map<std::string, Texture2D*> textures;
 	int cubeMapTexture;
 	int numberOfBezierInstances = 3;
@@ -47,6 +49,9 @@ private:
 	glm::vec3 controlP12;
 	glm::vec3 controlP13;
 	FrameBuffer *frameBuffer;
+	unsigned int particleNumber;
+	glm::vec3 currentBoatPropellerPosition=glm::vec3(0,0,0);
+	
 
 };
 

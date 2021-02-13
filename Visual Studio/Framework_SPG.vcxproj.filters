@@ -323,16 +323,31 @@
     <None Include="..\Source\NorwegianFjords\Shaders\BezierGeneratorVS.glsl">
       <Filter>NorwegianFjords\Shaders</Filter>
     </None>
+    <None Include="..\Source\NorwegianFjords\Shaders\DepthOfFieldFS.glsl">
+      <Filter>NorwegianFjords\Shaders</Filter>
+    </None>
+    <None Include="..\Source\NorwegianFjords\Shaders\DepthOfFieldVS.glsl">
+      <Filter>NorwegianFjords\Shaders</Filter>
+    </None>
+    <None Include="..\Source\NorwegianFjords\Shaders\SkyboxFS.glsl">
+      <Filter>NorwegianFjords\Shaders</Filter>
+    </None>
+    <None Include="..\Source\NorwegianFjords\Shaders\SkyboxVS.glsl">
+      <Filter>NorwegianFjords\Shaders</Filter>
+    </None>
     <None Include="..\Source\NorwegianFjords\Shaders\RegularFS.glsl">
       <Filter>NorwegianFjords\Shaders</Filter>
     </None>
     <None Include="..\Source\NorwegianFjords\Shaders\RegularVS.glsl">
       <Filter>NorwegianFjords\Shaders</Filter>
     </None>
-    <None Include="..\Source\NorwegianFjords\Shaders\DepthOfFieldFS.glsl">
+    <None Include="..\Source\NorwegianFjords\Shaders\WaterParticleFS.glsl">
       <Filter>NorwegianFjords\Shaders</Filter>
     </None>
-    <None Include="..\Source\NorwegianFjords\Shaders\DepthOfFieldVS.glsl">
+    <None Include="..\Source\NorwegianFjords\Shaders\WaterParticleGS.glsl">
+      <Filter>NorwegianFjords\Shaders</Filter>
+    </None>
+    <None Include="..\Source\NorwegianFjords\Shaders\WaterParticleVS.glsl">
       <Filter>NorwegianFjords\Shaders</Filter>
     </None>
   </ItemGroup>
