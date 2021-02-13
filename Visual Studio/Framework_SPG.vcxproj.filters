@@ -329,5 +329,11 @@
     <None Include="..\Source\NorwegianFjords\Shaders\RegularVS.glsl">
       <Filter>NorwegianFjords\Shaders</Filter>
     </None>
+    <None Include="..\Source\NorwegianFjords\Shaders\DepthOfFieldFS.glsl">
+      <Filter>NorwegianFjords\Shaders</Filter>
+    </None>
+    <None Include="..\Source\NorwegianFjords\Shaders\DepthOfFieldVS.glsl">
+      <Filter>NorwegianFjords\Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

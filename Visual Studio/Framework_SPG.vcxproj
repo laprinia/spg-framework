@@ -106,6 +106,8 @@
     <None Include="..\Source\NorwegianFjords\Shaders\BezierGeneratorFS.glsl" />
     <None Include="..\Source\NorwegianFjords\Shaders\BezierGeneratorGS.glsl" />
     <None Include="..\Source\NorwegianFjords\Shaders\BezierGeneratorVS.glsl" />
+    <None Include="..\Source\NorwegianFjords\Shaders\DepthOfFieldFS.glsl" />
+    <None Include="..\Source\NorwegianFjords\Shaders\DepthOfFieldVS.glsl" />
     <None Include="..\Source\NorwegianFjords\Shaders\RegularFS.glsl" />
     <None Include="..\Source\NorwegianFjords\Shaders\RegularVS.glsl" />
   </ItemGroup>

@@ -32,13 +32,13 @@ void NorwegianFjords::GenerateControlPoints() {
 	controlP6 = glm::vec3(GenerateRandomFloat(-5, 5), 0, controlP5.z + GenerateRandomFloat(-5, -1));
 	controlP7 = glm::vec3(GenerateRandomFloat(-5, 5), 0, controlP6.z + GenerateRandomFloat(-5, -1));
 	//third branch
-	controlP8 = glm::vec3(controlP5.x + GenerateRandomFloat(5, 10), 0.4f, controlP4.z + GenerateRandomFloat(-5, -1));
-	controlP9 = glm::vec3(controlP6.x + GenerateRandomFloat(5, 10), 0.0f, controlP8.z + GenerateRandomFloat(-5, -1));
-	controlP10 = glm::vec3(controlP7.x + GenerateRandomFloat(5, 10), 0.0f, controlP9.z + GenerateRandomFloat(-5, -1));
+	controlP8 = glm::vec3(controlP5.x + GenerateRandomFloat(2, 7), 0.4f, controlP4.z + GenerateRandomFloat(-5, -1));
+	controlP9 = glm::vec3(controlP6.x + GenerateRandomFloat(2, 7), 0.0f, controlP8.z + GenerateRandomFloat(-5, -1));
+	controlP10 = glm::vec3(controlP7.x + GenerateRandomFloat(2, 7), 0.0f, controlP9.z + GenerateRandomFloat(-5, -1));
 	//fourth branch
-	controlP11 = glm::vec3(controlP5.x - GenerateRandomFloat(5, 10), 0.6f, controlP4.z + GenerateRandomFloat(-5, -1));
-	controlP12 = glm::vec3(controlP6.x - GenerateRandomFloat(5, 10), 0.0f, controlP11.z + GenerateRandomFloat(-5, -1));
-	controlP13 = glm::vec3(controlP7.x - GenerateRandomFloat(5, 10), 0.0f, controlP12.z + GenerateRandomFloat(-5, -1));
+	controlP11 = glm::vec3(controlP5.x - GenerateRandomFloat(2, 7), 0.6f, controlP4.z + GenerateRandomFloat(-5, -1));
+	controlP12 = glm::vec3(controlP6.x - GenerateRandomFloat(2, 7), 0.0f, controlP11.z + GenerateRandomFloat(-5, -1));
+	controlP13 = glm::vec3(controlP7.x - GenerateRandomFloat(2, 7), 0.0f, controlP12.z + GenerateRandomFloat(-5, -1));
 
 }
 
@@ -67,6 +67,15 @@ void NorwegianFjords::Init() {
 		shader->CreateAndLink();
 		shaders[shader->GetName()] = shader;
 	}
+
+	{
+		Shader* shader = new Shader("DepthOfField");
+		shader->AddShader(shaderPath + "DepthOfFieldVS.glsl", GL_VERTEX_SHADER);
+		shader->AddShader(shaderPath + "DepthOfFieldFS.glsl", GL_FRAGMENT_SHADER);
+		shader->CreateAndLink();
+		shaders[shader->GetName()] = shader;
+	}
+
 	GenerateControlPoints();
 
 	{
@@ -102,6 +111,12 @@ void NorwegianFjords::Init() {
 			mesh->UseMaterials(false);
 			meshes[mesh->GetMeshID()] = mesh;
 		}
+		{
+			Mesh* mesh = new Mesh("quad");
+			mesh->LoadMesh(RESOURCE_PATH::MODELS + "Primitives", "quad.obj");
+			mesh->UseMaterials(false);
+			meshes[mesh->GetMeshID()] = mesh;
+		}
 		std::string cubeTexturePath = RESOURCE_PATH::TEXTURES + "Norwegian/";
 		cubeMapTexture = UploadCubeMapTexture(
 			cubeTexturePath + "posx.png",
@@ -118,12 +133,12 @@ void NorwegianFjords::Init() {
 
 void NorwegianFjords::FrameStart()
 {
-	glClearColor(0, 0, 0, 1);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 
 	glm::ivec2 resolution = window->GetResolution();
 	glViewport(0, 0, resolution.x, resolution.y);
 }
+
 
 void NorwegianFjords::GenerateBezierSurface(Mesh* mesh, Shader* shader, bool isRiver)
 {
@@ -174,12 +189,25 @@ void NorwegianFjords::GenerateBezierSurface(Mesh* mesh, Shader* shader, bool isR
 
 	RenderInstancedMesh(mesh, shader, glm::mat4(1), numberOfBezierInstances);
 }
+
+void NorwegianFjords::CreateFrameBuffer()
+{
+	auto resolution = window->GetResolution();
+	frameBuffer = new FrameBuffer();
+	frameBuffer->Generate(resolution.x, resolution.y,1);
+
+}
+
 void NorwegianFjords::Update(float deltaTimeSeconds)
 {
 
-	ClearScreen();
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	 ClearScreen();
+	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+	CreateFrameBuffer();
+	frameBuffer->Bind();
+
 	{
 		Shader* shader = shaders["RegularShader"];
 		shader->Use();
@@ -200,10 +228,37 @@ void NorwegianFjords::Update(float deltaTimeSeconds)
 
 	}
 
-	{Shader* shader = shaders["SurfaceGeneration"];
+	{
+	Shader* shader = shaders["SurfaceGeneration"];
 	 shader->Use();
-	// GenerateBezierSurface(meshes["riverSurface"], shader,true);
-	 GenerateBezierSurface(meshes["riverSurface"], shader, true);
+     GenerateBezierSurface(meshes["riverSurface"], shader, true);
+	
+	}
+
+	
+    glDepthMask(GL_TRUE);
+	glDisable(GL_BLEND);
+
+	//DoF
+	{
+		frameBuffer->BindDefault();
+		auto shader = shaders["DepthOfField"];
+		shader->Use();
+
+		{
+			int textureColorLoc = shader->GetUniformLocation("colorTexture");
+			glUniform1i(textureColorLoc, 0);
+			frameBuffer->BindTexture(0, GL_TEXTURE0);
+		}
+
+		{
+			int textureDepthLoc = shader->GetUniformLocation("depthTexture");
+			glUniform1i(textureDepthLoc, 1);
+			frameBuffer->BindDepthTexture(GL_TEXTURE1);
+		}
+
+		RenderMesh(meshes["quad"], shader, glm::vec3(0, 0, 0));
+		
 	}
 
 }
@@ -330,5 +385,5 @@ void NorwegianFjords::OnMouseScroll(int mouseX, int mouseY, int offsetX, int off
 
 void NorwegianFjords::OnWindowResize(int width, int height)
 {
-
+	frameBuffer->Resize(width, height,32);
 }

@@ -67,7 +67,7 @@ void Laborator6::Init()
 	auto resolution = window->GetResolution();
 
 	frameBuffer = new FrameBuffer();
-	frameBuffer->Generate(resolution.x, resolution.y, 3);
+	frameBuffer->Generate(resolution.x, resolution.y,3);
 
 	lightBuffer = new FrameBuffer();
 	lightBuffer->Generate(resolution.x, resolution.y, 1);

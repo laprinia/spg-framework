@@ -1,6 +1,7 @@
 #version 430
 layout(location = 0) out vec4 out_color;
 
+
 layout(location = 0) in vec2 texture_coord;
 layout(location = 1) in vec3 world_position;
 layout(location = 2) in vec3 world_normal;
@@ -12,6 +13,7 @@ layout (binding=2) uniform samplerCube texture_cubemap;
 
 uniform vec3 camera_position;
 vec3 V;
+
 vec4 reflection()
 {
     vec3 reflection=reflect(V, world_normal);

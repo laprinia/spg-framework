@@ -26,11 +26,12 @@ private:
 	void GenerateControlPoints();
 	float GenerateRandomFloat(float lower, float upper);
 	unsigned int UploadCubeMapTexture(const std::string& posx, const std::string& posy, const std::string& posz, const std::string& negx, const std::string& negy, const std::string& negz);
+	void CreateFrameBuffer();
 
 	std::unordered_map<std::string, Texture2D*> textures;
 	int cubeMapTexture;
 	int numberOfBezierInstances = 3;
-	int  numberOfBezierPoints=3;
+	int  numberOfBezierPoints=2;
 	float maxLevelOfTranslate=10.0f;
 	glm::vec3 controlP1;
 	glm::vec3 controlP2;
@@ -45,6 +46,7 @@ private:
 	glm::vec3 controlP11;
 	glm::vec3 controlP12;
 	glm::vec3 controlP13;
+	FrameBuffer *frameBuffer;
 
 };
 

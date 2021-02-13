@@ -85,8 +85,8 @@ void Laborator3::Update(float deltaTimeSeconds)
 	// Use camera->SetPosition() and camera->SetRotation(glm::quat(euler_angles)) 
 	{
 		frameBuffer->Bind(true);
-		camera->SetPosition(mirrorPos);
-		camera->SetRotation(mirrorRotation);
+		//camera->SetPosition(mirrorPos);
+		//camera->SetRotation(mirrorRotation);
 		DrawScene();
 		frameBuffer->BindDefault();
 	}
@@ -106,12 +106,13 @@ void Laborator3::Update(float deltaTimeSeconds)
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, frameBuffer->GetTexture(0)->GetTextureID());
 		glUniform1i(glGetUniformLocation(shader->GetProgramID(), "texture_1"), 0);
+		
 
 		frameBuffer->BindTexture(0, GL_TEXTURE0);
 
 		glm::mat4 modelMatrix(1);
 		modelMatrix = glm::translate(modelMatrix, mirrorPos);
-		modelMatrix = glm::scale(modelMatrix, glm::vec3(4));
+		modelMatrix = glm::scale(modelMatrix, glm::vec3(10));
 		RenderMesh(meshes["quad"], shader, modelMatrix);
 
 	}
@@ -127,7 +128,7 @@ void Laborator3::DrawScene()
 		glm::mat4 modelMatrix = glm::translate(glm::mat4(1), position);
 		modelMatrix = glm::rotate(modelMatrix, rotateAngle, glm::vec3(0, 1, 0));
 		modelMatrix = glm::scale(modelMatrix, glm::vec3(0.1f));
-
+		
 		RenderMesh(meshes["bamboo"], shaders["ShaderLab3"], modelMatrix);
 	}
 }
