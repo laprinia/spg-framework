@@ -7,6 +7,7 @@ uniform mat4 Projection;
 uniform vec3 eye_position;
 
 layout(location = 0) out vec2 texture_coord;
+layout(location = 1) out vec3 world_position;
 
 vec3 vpos = gl_in[0].gl_Position.xyz;
 vec3 forward = normalize(eye_position - vpos);
@@ -22,15 +23,19 @@ void EmitPoint(vec2 offset)
 
 void main()
 {
-	float ds = 0.05f;
+	float ds = 0.01f;
 	
 	texture_coord = vec2(0, 0);
+	world_position=vpos;
 	EmitPoint(vec2(-ds,-ds));
 	texture_coord = vec2(1, 0);
+	world_position=vpos;
 	EmitPoint(vec2(ds,-ds));
 	texture_coord = vec2(0, 1);
+	world_position=vpos;
 	EmitPoint(vec2(-ds,ds));
 	texture_coord = vec2(1, 1);
+	world_position=vpos;
 	EmitPoint(vec2(ds,ds));
 
 	EndPrimitive();

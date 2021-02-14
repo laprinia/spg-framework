@@ -11,7 +11,7 @@ struct WaterParticle
 	glm::vec4 speed;
 	glm::vec4 initialPosition;
 	glm::vec4 initialSpeed;
-
+	
 	WaterParticle() {};
 
 	WaterParticle(const glm::vec4& position, const glm::vec4& speed)
@@ -60,13 +60,13 @@ void NorwegianFjords::GenerateControlPoints() {
 	controlP6 = glm::vec3(GenerateRandomFloat(-5, 5), 0, controlP5.z + GenerateRandomFloat(-5, -1));
 	controlP7 = glm::vec3(GenerateRandomFloat(-5, 5), 0, controlP6.z + GenerateRandomFloat(-5, -1));
 	//third branch
-	controlP8 = glm::vec3(controlP5.x + GenerateRandomFloat(2, 7), 0.4f, controlP4.z + GenerateRandomFloat(-5, -1));
-	controlP9 = glm::vec3(controlP6.x + GenerateRandomFloat(2, 7), 0.0f, controlP8.z + GenerateRandomFloat(-5, -1));
-	controlP10 = glm::vec3(controlP7.x + GenerateRandomFloat(2, 7), 0.0f, controlP9.z + GenerateRandomFloat(-5, -1));
+	controlP8 = glm::vec3(controlP5.x + GenerateRandomFloat(4, 7), 0.4f, controlP4.z + GenerateRandomFloat(-5, -1));
+	controlP9 = glm::vec3(controlP6.x + GenerateRandomFloat(4, 7), 0.0f, controlP8.z + GenerateRandomFloat(-5, -1));
+	controlP10 = glm::vec3(controlP7.x + GenerateRandomFloat(4, 7), 0.0f, controlP9.z + GenerateRandomFloat(-5, -1));
 	//fourth branch
-	controlP11 = glm::vec3(controlP5.x - GenerateRandomFloat(2, 7), 0.6f, controlP4.z + GenerateRandomFloat(-5, -1));
-	controlP12 = glm::vec3(controlP6.x - GenerateRandomFloat(2, 7), 0.0f, controlP11.z + GenerateRandomFloat(-5, -1));
-	controlP13 = glm::vec3(controlP7.x - GenerateRandomFloat(2, 7), 0.0f, controlP12.z + GenerateRandomFloat(-5, -1));
+	controlP11 = glm::vec3(controlP5.x - GenerateRandomFloat(4, 7), 0.6f, controlP4.z + GenerateRandomFloat(-5, -1));
+	controlP12 = glm::vec3(controlP6.x - GenerateRandomFloat(4, 7), 0.0f, controlP11.z + GenerateRandomFloat(-5, -1));
+	controlP13 = glm::vec3(controlP7.x - GenerateRandomFloat(4, 7), 0.0f, controlP12.z + GenerateRandomFloat(-5, -1));
 
 	controlPoints.push_back(controlP1); controlPoints.push_back(controlP2); controlPoints.push_back(controlP3);
 	controlPoints.push_back(controlP4); controlPoints.push_back(controlP5); controlPoints.push_back(controlP6);
@@ -198,12 +198,12 @@ void NorwegianFjords::Init() {
 		);
 	}
 	{
-		particleNumber = 1000;
+		particleNumber = 4'000;
 		particleEffect = new ParticleEffect<WaterParticle>();
 		particleEffect->Generate(particleNumber, true);
 		particleSSBO = particleEffect->GetParticleBuffer();
 
-
+		
 	}
 
 }
@@ -279,20 +279,20 @@ void NorwegianFjords::ResetParticleData() {
 
 	//std::cout << "resetting data to " << currentBoatPropellerPosition.x;
 	WaterParticle* particleData = const_cast<WaterParticle*>(particleSSBO->GetBuffer());
-	int cubeSize = 2;
+	int cubeSize = 20;
 	int hSize = cubeSize / 2;
 
 	for (unsigned int i = 0; i < particleNumber; i++)
 	{
 		glm::vec4 pos(1);
-		pos.x = currentBoatPropellerPosition.x + (rand() % cubeSize - hSize) / 100.0f;
-		pos.y = currentBoatPropellerPosition.y + (rand() % cubeSize - hSize) / 100.0f;
-		pos.z = currentBoatPropellerPosition.z + (rand() % cubeSize - hSize) / 100.0f;
+		pos.x = currentBoatPropellerPosition.x + (rand() % cubeSize - hSize) / 30.0f;
+		pos.y = currentBoatPropellerPosition.y + (rand() % cubeSize - hSize) / 30.0f;
+		pos.z = currentBoatPropellerPosition.z + (rand() % cubeSize - hSize) / 30.0f;
 
 		glm::vec4 speed(0);
-		speed.x = (rand() % 20 - 10) / 100.0f;
-		speed.z = (rand() % 20 - 10) / 100.0f;
-		speed.y = rand() % 2 + 2.0f / 100.0f;
+		speed.x = (rand() % 5) / 100.0f;
+		speed.z = (rand() % 5) / 100.0f;
+		speed.y = (rand() % 20 - 10) / 10.0f;
 
 		particleData[i].SetInitial(pos, speed);
 	}
@@ -361,12 +361,14 @@ void NorwegianFjords::Update(float deltaTimeSeconds)
 		meshes["cube"]->Render();
 
 	}
+	
 	{
 		Shader* shader = shaders["SurfaceGeneration"];
 		shader->Use();
 		GenerateBezierSurface(meshes["riverSurface"], shader, true);
 
 	}
+	
 	{
 		Shader* shader = shaders["Regular"];
 		shader->Use();
@@ -395,10 +397,10 @@ void NorwegianFjords::Update(float deltaTimeSeconds)
 
 		meshes["boat"]->Render();
 
-		glm::vec3 propellerPoint = glm::vec3((lastBoatPoint+riverInstanceOffset).x, (lastBoatPoint+riverInstanceOffset).y - 0.5,( lastBoatPoint+riverInstanceOffset).z);
-		if (currentBoatPropellerPosition.x != propellerPoint.x || currentBoatPropellerPosition.y != propellerPoint.y || currentBoatPropellerPosition.z != propellerPoint.z) {
+		glm::vec3 propellerPoint = glm::vec3((lastBoatPoint).x, (lastBoatPoint).y+0.5,( lastBoatPoint).z);
+		if (distance(propellerPoint,currentBoatPropellerPosition)>0.3) {
 			currentBoatPropellerPosition = propellerPoint;
-			//ResetParticleData();
+			ResetParticleData();
 		}
 		lastBoatPoint = moveOffset;
 	}

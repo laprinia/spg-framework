@@ -28,7 +28,7 @@ void main()
 	vec3 pos = data[gl_VertexID].position.xyz;
 	vec3 spd = data[gl_VertexID].speed.xyz;
 
-	float dt = 0.1;
+	float dt = 0.2;
 
 	pos = pos + spd * dt + vec3(0, -0.9, 0) * dt * dt/2.0f ;
 	spd = spd + vec3(0, -0.9, 0) * dt;

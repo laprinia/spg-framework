@@ -8,9 +8,8 @@ layout(triangle_strip, max_vertices = 78) out;
 
 uniform mat4 View;
 uniform mat4 Projection;
-uniform vec3
-control_p1, control_p2, control_p3, control_p4,control_p5, control_p6, control_p7, control_p8,control_p9, control_p10, control_p11, control_p12,
-control_p13;
+uniform vec3 control_p1, control_p2, control_p3, control_p4,control_p5, control_p6, control_p7,
+control_p8,control_p9, control_p10, control_p11, control_p12, control_p13;
 uniform int instanceNumber;
 uniform int pointsNumber;
 
