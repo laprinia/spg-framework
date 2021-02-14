@@ -3,6 +3,7 @@
 #include <iostream>
 #include <vector>
 #include <stb/stb_image.h>
+#include <glm/gtx/quaternion.hpp>
 
 struct WaterParticle
 {
@@ -67,14 +68,24 @@ void NorwegianFjords::GenerateControlPoints() {
 	controlP12 = glm::vec3(controlP6.x - GenerateRandomFloat(2, 7), 0.0f, controlP11.z + GenerateRandomFloat(-5, -1));
 	controlP13 = glm::vec3(controlP7.x - GenerateRandomFloat(2, 7), 0.0f, controlP12.z + GenerateRandomFloat(-5, -1));
 
+	controlPoints.push_back(controlP1); controlPoints.push_back(controlP2); controlPoints.push_back(controlP3);
+	controlPoints.push_back(controlP4); controlPoints.push_back(controlP5); controlPoints.push_back(controlP6);
+	controlPoints.push_back(controlP7); controlPoints.push_back(controlP8); controlPoints.push_back(controlP9);
+	controlPoints.push_back(controlP10); controlPoints.push_back(controlP11); controlPoints.push_back(controlP12);
+	controlPoints.push_back(controlP13);
 }
 
 void NorwegianFjords::Init() {
 
+	GenerateControlPoints();
+	lastBoatPoint = glm::vec3(controlP1.x, controlP1.y, controlP1.z);
+	nextBoatPoint = GetNextPoint();
+	boatFacingMatrix=GetLookAtMatrix(nextBoatPoint + riverInstanceOffset, lastBoatPoint+ riverInstanceOffset);
 	auto camera = GetSceneCamera();
 
 	camera->SetPositionAndRotation(glm::vec3(0, 5, 4), glm::quat(glm::vec3(-30 * TO_RADIANS, 0, 0)));
 	camera->Update();
+
 
 
 	std::string shaderPath = "Source/NorwegianFjords/Shaders/";
@@ -118,7 +129,7 @@ void NorwegianFjords::Init() {
 		shaders[shader->GetName()] = shader;
 	}
 
-	GenerateControlPoints();
+
 
 	{
 
@@ -191,8 +202,8 @@ void NorwegianFjords::Init() {
 		particleEffect = new ParticleEffect<WaterParticle>();
 		particleEffect->Generate(particleNumber, true);
 		particleSSBO = particleEffect->GetParticleBuffer();
-		
-		
+
+
 	}
 
 }
@@ -233,7 +244,7 @@ void NorwegianFjords::GenerateBezierSurface(Mesh* mesh, Shader* shader, bool isR
 	glBindTexture(GL_TEXTURE_2D, textures["water"]->GetTextureID());
 
 	glUniform1i(glGetUniformLocation(shader->program, "texture_1"), 0);
-	
+
 	//ground text
 	glActiveTexture(GL_TEXTURE1);
 
@@ -260,13 +271,13 @@ void NorwegianFjords::CreateFrameBuffer()
 {
 	auto resolution = window->GetResolution();
 	frameBuffer = new FrameBuffer();
-	frameBuffer->Generate(resolution.x, resolution.y,1);
+	frameBuffer->Generate(resolution.x, resolution.y, 1);
 
 }
 
 void NorwegianFjords::ResetParticleData() {
-	
-	std::cout << "resetting data to " << currentBoatPropellerPosition.x;
+
+	//std::cout << "resetting data to " << currentBoatPropellerPosition.x;
 	WaterParticle* particleData = const_cast<WaterParticle*>(particleSSBO->GetBuffer());
 	int cubeSize = 2;
 	int hSize = cubeSize / 2;
@@ -274,7 +285,7 @@ void NorwegianFjords::ResetParticleData() {
 	for (unsigned int i = 0; i < particleNumber; i++)
 	{
 		glm::vec4 pos(1);
-		pos.x = currentBoatPropellerPosition.x +(rand() % cubeSize - hSize) / 100.0f;
+		pos.x = currentBoatPropellerPosition.x + (rand() % cubeSize - hSize) / 100.0f;
 		pos.y = currentBoatPropellerPosition.y + (rand() % cubeSize - hSize) / 100.0f;
 		pos.z = currentBoatPropellerPosition.z + (rand() % cubeSize - hSize) / 100.0f;
 
@@ -288,10 +299,44 @@ void NorwegianFjords::ResetParticleData() {
 
 	particleSSBO->SetBufferData(particleData);
 }
+glm::vec3 NorwegianFjords::GetNextPoint() {
+	if (currentPointIndex == 4) {
+		std::vector<int> randomOptions;
+		randomOptions.push_back(5); randomOptions.push_back(8); randomOptions.push_back(11);
+		currentPointIndex = randomOptions[(rand() % 3)];
+		isBoatReturning = false;
+	}
+	else if (currentPointIndex == 7 || currentPointIndex == 10 || currentPointIndex == 13)
+	{
+		currentPointIndex--;
+		isBoatReturning = true;
+	}
+	else if ((currentPointIndex == 5 && isBoatReturning) || (currentPointIndex == 8 && isBoatReturning) || (currentPointIndex == 11 && isBoatReturning)) {
+		currentPointIndex = 4;
+		isBoatReturning = false;
+	}
+	else if (currentPointIndex > 4 && isBoatReturning) {
+		currentPointIndex--;
+		
+	}
+	else {
+		currentPointIndex++;
+		isBoatReturning = false;
+	}
+	std::cout << currentPointIndex << std::endl;
+	return controlPoints[currentPointIndex - 1];
+}
+
+glm::mat4 NorwegianFjords::GetLookAtMatrix(glm::vec3 targetPosition,glm::vec3 position) {
+	glm::vec3 targetVector = glm::normalize(targetPosition - position);
+	glm::quat rotationInQuaternions = glm::rotation(glm::vec3(0, 0, 1), targetVector);
+	glm::mat4 rotationMatrix = glm::toMat4(rotationInQuaternions);
+	return rotationMatrix;
+}
 void NorwegianFjords::Update(float deltaTimeSeconds)
 {
-
-	 ClearScreen();
+	float speed = 0.1;
+	ClearScreen();
 	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
@@ -308,7 +353,7 @@ void NorwegianFjords::Update(float deltaTimeSeconds)
 		glUniformMatrix4fv(shader->loc_view_matrix, 1, GL_FALSE, glm::value_ptr(GetSceneCamera()->GetViewMatrix()));
 		glUniformMatrix4fv(shader->loc_projection_matrix, 1, GL_FALSE, glm::value_ptr(GetSceneCamera()->GetProjectionMatrix()));
 
-		
+
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMapTexture);
 		int loc_texture = shader->GetUniformLocation("texture_cubemap");
@@ -325,17 +370,20 @@ void NorwegianFjords::Update(float deltaTimeSeconds)
 	{
 		Shader* shader = shaders["Regular"];
 		shader->Use();
-		glm::vec3 boatPoint=glm::vec3(controlP1.x + 1.5, controlP1.y, controlP1.z - 1.0);
-		glm::mat4 modelMatrix = glm::translate(glm::mat4(1),boatPoint);
-		glm::vec3 propellerPoint = glm::vec3(boatPoint.x, boatPoint.y-0.5, boatPoint.z);
-		//todo save current postion
-		if (currentBoatPropellerPosition.x != propellerPoint.x || currentBoatPropellerPosition.y != propellerPoint.y || currentBoatPropellerPosition.z != propellerPoint.z) {
-			currentBoatPropellerPosition = propellerPoint;
-			ResetParticleData();
+		//CRUISE
+		
+        glm::vec3 zForward = glm::normalize((nextBoatPoint + riverInstanceOffset) - (lastBoatPoint + riverInstanceOffset));
+		moveOffset += zForward * deltaTimeSeconds;
+		glm::mat4 modelMatrix = glm::translate(glm::mat4(1), moveOffset);
+        modelMatrix = modelMatrix * boatFacingMatrix;
+		modelMatrix = glm::scale(modelMatrix, glm::vec3(0.3));
+		
+		if (distance(lastBoatPoint+ riverInstanceOffset, nextBoatPoint+ riverInstanceOffset) <= 0.5) {
+			
+			nextBoatPoint = GetNextPoint();
+			boatFacingMatrix = GetLookAtMatrix(nextBoatPoint+riverInstanceOffset, lastBoatPoint+riverInstanceOffset);
 		}
 
-		modelMatrix = glm::rotate(modelMatrix,170*TO_RADIANS,glm::vec3(0,1,0));
-		modelMatrix = glm::scale(modelMatrix, glm::vec3(0.3));
 		glUniformMatrix4fv(shader->loc_model_matrix, 1, GL_FALSE, glm::value_ptr(modelMatrix));
 		glUniformMatrix4fv(shader->loc_view_matrix, 1, GL_FALSE, glm::value_ptr(GetSceneCamera()->GetViewMatrix()));
 		glUniformMatrix4fv(shader->loc_projection_matrix, 1, GL_FALSE, glm::value_ptr(GetSceneCamera()->GetProjectionMatrix()));
@@ -344,8 +392,15 @@ void NorwegianFjords::Update(float deltaTimeSeconds)
 		glBindTexture(GL_TEXTURE_2D, textures["boat"]->GetTextureID());
 		int loc_texture = shader->GetUniformLocation("texture_1");
 		glUniform1i(loc_texture, 0);
-		
+
 		meshes["boat"]->Render();
+
+		glm::vec3 propellerPoint = glm::vec3((lastBoatPoint+riverInstanceOffset).x, (lastBoatPoint+riverInstanceOffset).y - 0.5,( lastBoatPoint+riverInstanceOffset).z);
+		if (currentBoatPropellerPosition.x != propellerPoint.x || currentBoatPropellerPosition.y != propellerPoint.y || currentBoatPropellerPosition.z != propellerPoint.z) {
+			currentBoatPropellerPosition = propellerPoint;
+			//ResetParticleData();
+		}
+		lastBoatPoint = moveOffset;
 	}
 	glEnable(GL_BLEND);
 	glDisable(GL_DEPTH_TEST);
@@ -353,7 +408,7 @@ void NorwegianFjords::Update(float deltaTimeSeconds)
 	glBlendEquation(GL_FUNC_ADD);
 
 	{
-		
+
 		Shader* shader = shaders["WaterParticle"];
 		shader->Use();
 
@@ -367,14 +422,11 @@ void NorwegianFjords::Update(float deltaTimeSeconds)
 
 	glEnable(GL_DEPTH_TEST);
 	glDisable(GL_BLEND);
-	
-	
 
-	
-   // glDepthMask(GL_TRUE);
-	
+	// glDepthMask(GL_TRUE);
 
-	//DoF
+
+	 //DoF
 	{
 		frameBuffer->BindDefault();
 		auto shader = shaders["DepthOfField"];
@@ -393,7 +445,7 @@ void NorwegianFjords::Update(float deltaTimeSeconds)
 		}
 
 		RenderMesh(meshes["quad"], shader, glm::vec3(0, 0, 0));
-		
+
 	}
 
 }
@@ -474,7 +526,7 @@ void NorwegianFjords::RenderInstancedMesh(Mesh* mesh, Shader* shader, const glm:
 
 	glBindVertexArray(mesh->GetBuffers()->VAO);
 	glDrawElementsInstanced(mesh->GetDrawMode(), static_cast<int>(mesh->indices.size()), GL_UNSIGNED_INT, (void*)0, instances);
-	
+
 
 }
 
@@ -520,5 +572,5 @@ void NorwegianFjords::OnMouseScroll(int mouseX, int mouseY, int offsetX, int off
 
 void NorwegianFjords::OnWindowResize(int width, int height)
 {
-	frameBuffer->Resize(width, height,32);
+	frameBuffer->Resize(width, height, 32);
 }

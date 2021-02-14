@@ -6,10 +6,8 @@ layout(lines) in;
 
 layout(triangle_strip, max_vertices = 78) out;
 
-uniform mat4
-View;
-uniform mat4
-Projection;
+uniform mat4 View;
+uniform mat4 Projection;
 uniform vec3
 control_p1, control_p2, control_p3, control_p4,control_p5, control_p6, control_p7, control_p8,control_p9, control_p10, control_p11, control_p12,
 control_p13;
@@ -17,26 +15,16 @@ uniform int instanceNumber;
 uniform int pointsNumber;
 
 
-layout(location = 0
-)
-out vec2
-texture_coord;
-layout(location = 1
-)
-out vec3
-world_position;
-layout(location = 2
-)
-out vec3
-world_normal;
-layout(location = 3
-)
-flat out
-int isReflective;
+layout(location = 0 )out vec2 texture_coord;
+layout(location = 1) out vec3 world_position;
+layout(location = 2)
+out vec3 world_normal;
+layout(location = 3)
+flat out int isReflective;
 in int instance[2];
 
-vec3[10][2]
-lastPointsOfLastInstance;
+vec3[10][2] lastPointsOfLastInstance;
+
 int isIntersecting = 0;
 
 vec3 cubicBezier(float t, vec3 cp1, vec3 cp2, vec3 cp3, vec3 cp4) {
@@ -115,23 +103,14 @@ vec3 getLineIntersect(float p0_x, float p0_y, float p1_x, float p1_y,
     return vec3(0, 0, 0);
 }
 
-void createRiverBranch(vec3
-cp1,
-vec3 cp2, vec3
-cp3,
-vec3 cp4,
-int leftMountainType,
-int rightMountainType
-)
+void createRiverBranch(vec3 cp1, vec3 cp2, vec3 cp3, vec3 cp4,int leftMountainType,int rightMountainType)
 {
 vec3 offset = vec3(1, 0, 0) * instance[0];
 vec3 offset2 = vec3(1, 0, 0) * (instance[0]);
 vec3 offset3 = vec3(1, 0, 0) * (instance[0] + 1);
 vec3 offset4 = vec3(1, 0, 0) * (instance[0] + 1);
 
-for (
-float t = 0.0;
-t < 1; t += 1.0 / pointsNumber) {
+for (float t = 0.0; t < 1; t += 1.0 / pointsNumber) {
 
 vec3 p1 = cubicBezier(t, cp1, cp2, cp3, cp4);
 vec3 p2 = cubicBezier(t + 1.0 / pointsNumber, cp1, cp2, cp3, cp4);

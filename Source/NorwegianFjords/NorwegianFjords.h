@@ -28,6 +28,8 @@ private:
 	unsigned int UploadCubeMapTexture(const std::string& posx, const std::string& posy, const std::string& posz, const std::string& negx, const std::string& negy, const std::string& negz);
 	void CreateFrameBuffer();
 	void ResetParticleData();
+	glm::vec3 GetNextPoint();
+	glm::mat4 GetLookAtMatrix(glm::vec3 targetPosition,glm::vec3 position);
 
 	
 	std::unordered_map<std::string, Texture2D*> textures;
@@ -51,7 +53,15 @@ private:
 	FrameBuffer *frameBuffer;
 	unsigned int particleNumber;
 	glm::vec3 currentBoatPropellerPosition=glm::vec3(0,0,0);
-	
+	glm::mat4 boatFacingMatrix;
 
+	int currentPointIndex = 1;
+	std::vector<glm::vec3> controlPoints;
+	glm::vec3 nextBoatPoint;
+	glm::vec3 lastBoatPoint=glm::vec3(10,10,10);
+	float boatSpeed;
+	glm::vec3 moveOffset=glm::vec3(0,0,0);
+	bool isBoatReturning = false;
+	glm::vec3 riverInstanceOffset = glm::vec3(0.8, 0.5, -1.0);
 };
 
