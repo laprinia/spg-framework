@@ -10,7 +10,7 @@ layout(location = 1) in vec3 world_position;
 void main()
 {
 	vec3 color = texture(texture_1, texture_coord).xyz;
-	if(world_position.y<-1){
+	if(world_position.y<-0.5){
 	discard;
 	}
 	out_color = vec4(color, 1);

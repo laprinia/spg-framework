@@ -11,6 +11,7 @@ layout (binding=0) uniform sampler2D texture_1;
 layout (binding=1) uniform sampler2D texture_2;
 layout (binding=2) uniform samplerCube texture_cubemap;
 
+
 uniform vec3 camera_position;
 vec3 V;
 
@@ -24,7 +25,7 @@ vec4 reflection()
 
 vec4 refraction( float refractive_index)
 {
-    vec3 refraction=refract(-V,world_normal,refractive_index);
+    vec3 refraction=refract(V,world_normal,refractive_index);
     return texture(texture_cubemap,refraction,1);
 }
 
@@ -50,7 +51,8 @@ void main()
    
   vec4 cubeColor=mix(refraction(1.0/1.33),reflection(),0.5);
    
-   out_color=mix(cubeColor,color,0.1);
+  out_color=mix(cubeColor,color,0.1);
+  
    if(isReflective==0){
    out_color=color2;
    }

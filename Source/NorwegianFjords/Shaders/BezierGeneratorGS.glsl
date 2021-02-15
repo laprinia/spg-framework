@@ -16,10 +16,9 @@ uniform int pointsNumber;
 
 layout(location = 0 )out vec2 texture_coord;
 layout(location = 1) out vec3 world_position;
-layout(location = 2)
-out vec3 world_normal;
-layout(location = 3)
-flat out int isReflective;
+layout(location = 2) out vec3 world_normal;
+layout(location = 3) flat out int isReflective;
+
 in int instance[2];
 
 vec3[10][2] lastPointsOfLastInstance;
@@ -35,7 +34,7 @@ void createMountainInstanced(int isFlipped, vec3 startingPoint1, vec3 startingPo
 
     float instanceDisplacement1 = isFlipped == 1 ? -1 : 1;
     geometryDisplacement1 = isFlipped == 1 ? instance[0] * geometryDisplacement1 : geometryDisplacement1;
-
+    
     gl_Position = Projection * View * vec4(startingPoint1.x + geometryDisplacement1,
                                            instance[0] == 1 ? startingPoint1.y + heightDisplacement : startingPoint1.y,
                                            startingPoint1.z, 1);
@@ -175,9 +174,7 @@ if(instance[0]==2){
 lastPointsOfLastInstance[pointsNumber][0]=p3+offset3;
 lastPointsOfLastInstance[pointsNumber][1]=p4+offset4;
 }
-
 }
-
 }
 
 

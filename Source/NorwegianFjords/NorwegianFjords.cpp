@@ -11,7 +11,7 @@ struct WaterParticle
 	glm::vec4 speed;
 	glm::vec4 initialPosition;
 	glm::vec4 initialSpeed;
-	
+
 	WaterParticle() {};
 
 	WaterParticle(const glm::vec4& position, const glm::vec4& speed)
@@ -79,10 +79,10 @@ void NorwegianFjords::Init() {
 
 	CreateFrameBuffer();
 	GenerateControlPoints();
-	lastBoatPoint = glm::vec3(controlP1.x, controlP1.y, controlP1.z);
-	
+	lastBoatPoint = GetPointOnBezier(0);
+
 	nextBoatPoint = GetNextPoint();
-	boatFacingMatrix=GetLookAtMatrix(nextBoatPoint + riverInstanceOffset, lastBoatPoint);
+	boatFacingMatrix = GetLookAtMatrix(nextBoatPoint + riverInstanceOffset, lastBoatPoint);
 	auto camera = GetSceneCamera();
 
 	camera->SetPositionAndRotation(glm::vec3(0, 5, 4), glm::quat(glm::vec3(-30 * TO_RADIANS, 0, 0)));
@@ -205,7 +205,7 @@ void NorwegianFjords::Init() {
 		particleEffect->Generate(particleNumber, true);
 		particleSSBO = particleEffect->GetParticleBuffer();
 
-		
+
 	}
 
 }
@@ -239,7 +239,7 @@ void NorwegianFjords::GenerateBezierSurface(Mesh* mesh, Shader* shader, bool isR
 	glUniform1i(glGetUniformLocation(shader->program, "instanceNumber"), numberOfBezierInstances);
 	glUniform1i(glGetUniformLocation(shader->program, "pointsNumber"), numberOfBezierPoints);
 
-	auto cameraPosition = GetSceneCamera()->transform->GetWorldPosition();
+
 	//water text
 	glActiveTexture(GL_TEXTURE0);
 
@@ -261,6 +261,7 @@ void NorwegianFjords::GenerateBezierSurface(Mesh* mesh, Shader* shader, bool isR
 	int loc_texture = shader->GetUniformLocation("texture_cubemap");
 	glUniform1i(loc_texture, 2);
 
+	auto cameraPosition = GetSceneCamera()->transform->GetWorldPosition();
 	int loc_camera = shader->GetUniformLocation("camera_position");
 	glUniform3f(loc_camera, cameraPosition.x, cameraPosition.y, cameraPosition.z);
 
@@ -319,22 +320,56 @@ glm::vec3 NorwegianFjords::GetNextPoint() {
 	}
 	else if (currentPointIndex > 4 && isBoatReturning) {
 		currentPointIndex--;
-		
+
 	}
 	else {
 		currentPointIndex++;
 		isBoatReturning = false;
 	}
 	std::cout << currentPointIndex << std::endl;
-	return controlPoints[currentPointIndex - 1];
+	return GetPointOnBezier(currentPointIndex - 1);
 }
 
-glm::mat4 NorwegianFjords::GetLookAtMatrix(glm::vec3 targetPosition,glm::vec3 position) {
+glm::mat4 NorwegianFjords::GetLookAtMatrix(glm::vec3 targetPosition, glm::vec3 position) {
 	glm::vec3 targetVector = glm::normalize(targetPosition - position);
 	glm::quat rotationInQuaternions = glm::rotation(glm::vec3(0, 0, 1), targetVector);
 	glm::mat4 rotationMatrix = glm::toMat4(rotationInQuaternions);
 	return rotationMatrix;
 }
+glm::vec3 NorwegianFjords::GetCubicBezier(float t, glm::vec3 cp1, glm::vec3 cp2, glm::vec3 cp3, glm::vec3 cp4)
+{
+	return cp1 * glm::vec3(pow((1 - t), 3)) + cp2 * glm::vec3(3) * t * glm::vec3(pow((1 - t), 2)) + cp3 * glm::vec3(3) * glm::vec3(pow(t, 2)) * (1 - t) + cp4 * glm::vec3(pow(t, 3));
+
+}
+glm::vec3 NorwegianFjords::GetPointOnBezier(int point)
+{
+	glm::vec3 newPoint;
+	float t;
+	bool isEven = ((point + 1) % 2) == 0;
+	if (point <= 3) {
+		t = point < 2 ? 0 : 0.5;
+		newPoint = GetCubicBezier(isEven ? t + 1.0 / numberOfBezierPoints : t, controlP1, controlP2, controlP3, controlP4);
+
+	}
+	else if (point <= 6) {
+
+		t = point < 5 ? 0 : 0.5;
+		newPoint = GetCubicBezier(!isEven ? t + 1.0 / numberOfBezierPoints : t, controlP4, controlP5, controlP6, controlP7);
+	}
+	else if (point <= 9) {
+
+		t = point < 8 ? 0 : 0.5;
+		newPoint = GetCubicBezier(isEven ? t + 1.0 / numberOfBezierPoints : t, controlP4, controlP8, controlP9, controlP10);
+	}
+	else {
+
+		t = point < 11 ? 0 : 0.5;
+		newPoint = GetCubicBezier(!isEven ? t + 1.0 / numberOfBezierPoints : t, controlP4, controlP11, controlP12, controlP13);
+	}
+
+	return newPoint;
+}
+
 void NorwegianFjords::Update(float deltaTimeSeconds)
 {
 	float speed = 0.1;
@@ -342,7 +377,7 @@ void NorwegianFjords::Update(float deltaTimeSeconds)
 	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-	
+
 	frameBuffer->Bind();
 
 	{
@@ -363,29 +398,29 @@ void NorwegianFjords::Update(float deltaTimeSeconds)
 		meshes["cube"]->Render();
 
 	}
-	
+
 	{
 		Shader* shader = shaders["SurfaceGeneration"];
 		shader->Use();
 		GenerateBezierSurface(meshes["riverSurface"], shader, true);
 
 	}
-	
+
 	{
 		Shader* shader = shaders["Regular"];
 		shader->Use();
 		//CRUISE
-		
-        glm::vec3 zForward = glm::normalize((nextBoatPoint + riverInstanceOffset) - lastBoatPoint);
+
+		glm::vec3 zForward = glm::normalize((nextBoatPoint + riverInstanceOffset) - lastBoatPoint);
 		moveOffset += zForward * deltaTimeSeconds;
-		glm::mat4 modelMatrix = glm::translate(glm::mat4(1), moveOffset);
-        modelMatrix = modelMatrix * boatFacingMatrix;
+		glm::mat4 modelMatrix = glm::translate(glm::mat4(1), moveOffset + riverInstanceOffset);
+		modelMatrix = modelMatrix * boatFacingMatrix;
 		modelMatrix = glm::scale(modelMatrix, glm::vec3(0.3));
-		
-		if (distance(lastBoatPoint, nextBoatPoint+ riverInstanceOffset) <= 0.3) {
-			
+
+		if (distance(lastBoatPoint, nextBoatPoint + riverInstanceOffset) <= 0.3) {
+
 			nextBoatPoint = GetNextPoint();
-			
+
 		}
 		boatFacingMatrix = GetLookAtMatrix(nextBoatPoint + riverInstanceOffset, lastBoatPoint);
 		glUniformMatrix4fv(shader->loc_model_matrix, 1, GL_FALSE, glm::value_ptr(modelMatrix));
@@ -399,8 +434,8 @@ void NorwegianFjords::Update(float deltaTimeSeconds)
 
 		meshes["boat"]->Render();
 
-		glm::vec3 propellerPoint = glm::vec3((lastBoatPoint).x, (lastBoatPoint).y+0.5,( lastBoatPoint).z);
-		if (distance(propellerPoint,currentBoatPropellerPosition)>0.3) {
+		glm::vec3 propellerPoint = glm::vec3((lastBoatPoint).x + 1.0, (lastBoatPoint).y + 0.5, (lastBoatPoint).z + 0.3);
+		if (distance(propellerPoint, currentBoatPropellerPosition) > 0.3) {
 			currentBoatPropellerPosition = propellerPoint;
 			ResetParticleData();
 		}

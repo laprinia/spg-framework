@@ -30,6 +30,8 @@ private:
 	void ResetParticleData();
 	glm::vec3 GetNextPoint();
 	glm::mat4 GetLookAtMatrix(glm::vec3 targetPosition,glm::vec3 position);
+	glm::vec3 GetCubicBezier(float t, glm::vec3 cp1, glm::vec3 cp2, glm::vec3 cp3, glm::vec3 cp4);
+	glm::vec3 GetPointOnBezier(int point);
 
 	
 	std::unordered_map<std::string, Texture2D*> textures;
@@ -62,6 +64,6 @@ private:
 	float boatSpeed;
 	glm::vec3 moveOffset=glm::vec3(0,0,0);
 	bool isBoatReturning = false;
-	glm::vec3 riverInstanceOffset = glm::vec3(0.7, 0, -1.0);
+	glm::vec3 riverInstanceOffset = glm::vec3(1, 0, 0);
 };
 

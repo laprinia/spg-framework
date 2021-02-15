@@ -14,7 +14,7 @@ layout(location = 0) out vec4 out_color;
 vec3 V;
 vec3 myReflect()
 {
-    vec3 reflection=reflect(-V, world_normal);
+    vec3 reflection=reflect(V, world_normal);
 
     return texture(texture_cubemap, reflection).xyz;
 }
@@ -22,7 +22,7 @@ vec3 myReflect()
 
 vec3 myRefract(float refractive_index)
 {
-    vec3 refraction=refract(-V,world_normal,refractive_index);
+    vec3 refraction=refract(V,world_normal,refractive_index);
     return texture(texture_cubemap,refraction).xyz;
 }
 
