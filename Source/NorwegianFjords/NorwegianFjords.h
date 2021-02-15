@@ -62,6 +62,6 @@ private:
 	float boatSpeed;
 	glm::vec3 moveOffset=glm::vec3(0,0,0);
 	bool isBoatReturning = false;
-	glm::vec3 riverInstanceOffset = glm::vec3(0.8, 0.5, -1.0);
+	glm::vec3 riverInstanceOffset = glm::vec3(0.7, 0, -1.0);
 };
 

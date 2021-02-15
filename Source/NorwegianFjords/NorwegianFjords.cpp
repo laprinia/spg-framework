@@ -77,10 +77,12 @@ void NorwegianFjords::GenerateControlPoints() {
 
 void NorwegianFjords::Init() {
 
+	CreateFrameBuffer();
 	GenerateControlPoints();
 	lastBoatPoint = glm::vec3(controlP1.x, controlP1.y, controlP1.z);
+	
 	nextBoatPoint = GetNextPoint();
-	boatFacingMatrix=GetLookAtMatrix(nextBoatPoint + riverInstanceOffset, lastBoatPoint+ riverInstanceOffset);
+	boatFacingMatrix=GetLookAtMatrix(nextBoatPoint + riverInstanceOffset, lastBoatPoint);
 	auto camera = GetSceneCamera();
 
 	camera->SetPositionAndRotation(glm::vec3(0, 5, 4), glm::quat(glm::vec3(-30 * TO_RADIANS, 0, 0)));
@@ -340,7 +342,7 @@ void NorwegianFjords::Update(float deltaTimeSeconds)
 	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-	CreateFrameBuffer();
+	
 	frameBuffer->Bind();
 
 	{
@@ -374,18 +376,18 @@ void NorwegianFjords::Update(float deltaTimeSeconds)
 		shader->Use();
 		//CRUISE
 		
-        glm::vec3 zForward = glm::normalize((nextBoatPoint + riverInstanceOffset) - (lastBoatPoint + riverInstanceOffset));
+        glm::vec3 zForward = glm::normalize((nextBoatPoint + riverInstanceOffset) - lastBoatPoint);
 		moveOffset += zForward * deltaTimeSeconds;
 		glm::mat4 modelMatrix = glm::translate(glm::mat4(1), moveOffset);
         modelMatrix = modelMatrix * boatFacingMatrix;
 		modelMatrix = glm::scale(modelMatrix, glm::vec3(0.3));
 		
-		if (distance(lastBoatPoint+ riverInstanceOffset, nextBoatPoint+ riverInstanceOffset) <= 0.5) {
+		if (distance(lastBoatPoint, nextBoatPoint+ riverInstanceOffset) <= 0.3) {
 			
 			nextBoatPoint = GetNextPoint();
-			boatFacingMatrix = GetLookAtMatrix(nextBoatPoint+riverInstanceOffset, lastBoatPoint+riverInstanceOffset);
+			
 		}
-
+		boatFacingMatrix = GetLookAtMatrix(nextBoatPoint + riverInstanceOffset, lastBoatPoint);
 		glUniformMatrix4fv(shader->loc_model_matrix, 1, GL_FALSE, glm::value_ptr(modelMatrix));
 		glUniformMatrix4fv(shader->loc_view_matrix, 1, GL_FALSE, glm::value_ptr(GetSceneCamera()->GetViewMatrix()));
 		glUniformMatrix4fv(shader->loc_projection_matrix, 1, GL_FALSE, glm::value_ptr(GetSceneCamera()->GetProjectionMatrix()));
