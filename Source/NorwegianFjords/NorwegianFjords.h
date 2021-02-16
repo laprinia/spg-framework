@@ -22,6 +22,7 @@ private:
 	void OnMouseScroll(int mouseX, int mouseY, int offsetX, int offsetY) override;
 	void OnWindowResize(int width, int height) override;
 	void RenderInstancedMesh(Mesh* mesh, Shader* shader, const glm::mat4& modelMatrix, int instances);
+	void GenerateInBetweenBezier(Mesh* mesh, Shader* shader);
 	void GenerateBezierSurface(Mesh* mesh, Shader* shader,bool isRiver);
 	void GenerateControlPoints();
 	float GenerateRandomFloat(float lower, float upper);

@@ -278,6 +278,36 @@ void NorwegianFjords::GenerateBezierSurface(Mesh* mesh, Shader* shader, bool isR
 	RenderInstancedMesh(mesh, shader, glm::mat4(1), numberOfBezierInstances);
 }
 
+void NorwegianFjords::GenerateInBetweenBezier(Mesh* mesh, Shader* shader)
+{
+
+	glUniform3f(glGetUniformLocation(shader->program, "control_p1"), controlP1.x, controlP1.y, controlP1.z);
+	glUniform3f(glGetUniformLocation(shader->program, "control_p2"), controlP2.x, controlP2.y, controlP2.z);
+	glUniform3f(glGetUniformLocation(shader->program, "control_p3"), controlP3.x, controlP3.y, controlP3.z);
+	glUniform3f(glGetUniformLocation(shader->program, "control_p4"), controlP4.x, controlP4.y, controlP4.z);
+	glUniform3f(glGetUniformLocation(shader->program, "control_p5"), controlP5.x, controlP5.y, controlP5.z);
+	glUniform3f(glGetUniformLocation(shader->program, "control_p6"), controlP6.x, controlP6.y, controlP6.z);
+	glUniform3f(glGetUniformLocation(shader->program, "control_p7"), controlP7.x, controlP7.y, controlP7.z);
+	glUniform3f(glGetUniformLocation(shader->program, "control_p8"), controlP8.x, controlP8.y, controlP8.z);
+	glUniform3f(glGetUniformLocation(shader->program, "control_p9"), controlP9.x, controlP9.y, controlP9.z);
+	glUniform3f(glGetUniformLocation(shader->program, "control_p10"), controlP10.x, controlP10.y, controlP10.z);
+	glUniform3f(glGetUniformLocation(shader->program, "control_p11"), controlP11.x, controlP11.y, controlP11.z);
+	glUniform3f(glGetUniformLocation(shader->program, "control_p12"), controlP12.x, controlP12.y, controlP12.z);
+	glUniform3f(glGetUniformLocation(shader->program, "control_p13"), controlP13.x, controlP13.y, controlP13.z);
+
+	glUniform1i(glGetUniformLocation(shader->program, "instanceNumber"), numberOfBezierInstances);
+	glUniform1i(glGetUniformLocation(shader->program, "pointsNumber"), numberOfBezierPoints);
+
+
+	//water text
+	glActiveTexture(GL_TEXTURE0);
+
+	glBindTexture(GL_TEXTURE_2D, textures["ground"]->GetTextureID());
+
+	glUniform1i(glGetUniformLocation(shader->program, "texture_1"), 0);
+
+	RenderInstancedMesh(mesh, shader, glm::mat4(1), 1);
+}
 void NorwegianFjords::CreateFrameBuffer()
 {
 	auto resolution = window->GetResolution();
@@ -413,6 +443,11 @@ void NorwegianFjords::Update(float deltaTimeSeconds)
 		GenerateBezierSurface(meshes["riverSurface"], shader, true);
 
 	}
+	{
+		Shader* shader = shaders["InBetween"];
+		shader->Use();
+		GenerateInBetweenBezier(meshes["riverSurface"], shader);
+	}
 
 	{
 		Shader* shader = shaders["Regular"];
@@ -489,6 +524,9 @@ void NorwegianFjords::Update(float deltaTimeSeconds)
 			int textureDepthLoc = shader->GetUniformLocation("depthTexture");
 			glUniform1i(textureDepthLoc, 1);
 			frameBuffer->BindDepthTexture(GL_TEXTURE1);
+		}
+		{
+			glUniform2f(glGetUniformLocation(shader->program, "screenSize"), window->GetResolution().x, window->GetResolution().y);
 		}
 
 		RenderMesh(meshes["quad"], shader, glm::vec3(0, 0, 0));
