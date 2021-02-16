@@ -114,6 +114,14 @@ void NorwegianFjords::Init() {
 		shader->CreateAndLink();
 		shaders[shader->GetName()] = shader;
 	}
+	{
+		Shader* shader = new Shader("InBetween");
+		shader->AddShader(shaderPath + "BezierInBetweenVS.glsl", GL_VERTEX_SHADER);
+		shader->AddShader(shaderPath + "BezierInBetweenGS.glsl", GL_GEOMETRY_SHADER);
+		shader->AddShader(shaderPath + "BezierInBetweenFS.glsl", GL_FRAGMENT_SHADER);
+		shader->CreateAndLink();
+		shaders[shader->GetName()] = shader;
+	}
 
 	{
 		Shader* shader = new Shader("DepthOfField");
@@ -434,7 +442,7 @@ void NorwegianFjords::Update(float deltaTimeSeconds)
 
 		meshes["boat"]->Render();
 
-		glm::vec3 propellerPoint = glm::vec3((lastBoatPoint).x + 1.0, (lastBoatPoint).y + 0.5, (lastBoatPoint).z + 0.3);
+		glm::vec3 propellerPoint = glm::vec3((lastBoatPoint).x + 1.0, (lastBoatPoint).y + 0.5, (lastBoatPoint).z + 0.7);
 		if (distance(propellerPoint, currentBoatPropellerPosition) > 0.3) {
 			currentBoatPropellerPosition = propellerPoint;
 			ResetParticleData();

@@ -350,5 +350,14 @@
     <None Include="..\Source\NorwegianFjords\Shaders\WaterParticleVS.glsl">
       <Filter>NorwegianFjords\Shaders</Filter>
     </None>
+    <None Include="..\Source\NorwegianFjords\Shaders\BezierInBetweenFS.glsl">
+      <Filter>NorwegianFjords\Shaders</Filter>
+    </None>
+    <None Include="..\Source\NorwegianFjords\Shaders\BezierInBetweenGS.glsl">
+      <Filter>NorwegianFjords\Shaders</Filter>
+    </None>
+    <None Include="..\Source\NorwegianFjords\Shaders\BezierInBetweenVS.glsl">
+      <Filter>NorwegianFjords\Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

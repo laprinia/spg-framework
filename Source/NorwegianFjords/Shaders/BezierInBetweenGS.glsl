@@ -21,6 +21,10 @@ layout(location = 3) flat out int isReflective;
 
 in int instance[2];
 
+vec3[10][2] lastPointsOfLastInstance;
+
+int isIntersecting = 0;
+
 vec3 cubicBezier(float t, vec3 cp1, vec3 cp2, vec3 cp3, vec3 cp4) {
     return cp1 * pow((1 - t), 3) + cp2 * 3 * t * pow((1 - t), 2) + cp3 * 3 * pow(t, 2) * (1 - t) + cp4 * pow(t, 3);
 }
@@ -148,19 +152,29 @@ EmitVertex();
 EndPrimitive();
 
 //right mountain
-if(rightMountainType==edgeMountain){
-createMountainInstanced(0,p3+offset3, p4+offset4,2,3);
-
+switch(rightMountainType){
+case edgeMountain: createMountainInstanced(0,p3+offset3, p4+offset4,2,3); break;
+case inBetweenMountain:
+break;
 }
 
 //left mountain
-if(leftMountainType==edgeMountain){
+switch(leftMountainType){
+case edgeMountain:
 createMountainInstanced(1,p1+offset, p2+offset2,-2,3);
+break;
+case inBetweenMountain:
 
+//todo
+
+break;
 }
+if(instance[0]==2){
 
+lastPointsOfLastInstance[pointsNumber][0]=p3+offset3;
+lastPointsOfLastInstance[pointsNumber][1]=p4+offset4;
 }
-
+}
 }
 
 
