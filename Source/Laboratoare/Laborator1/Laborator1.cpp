@@ -20,9 +20,9 @@ Laborator1::~Laborator1()
 
 void Laborator1::Init()
 {
-	nrInstances = 5;
-	maxInstances = 50;
-	shrink = 10;
+	numberOfInstances = 5;
+	maximumInstances = 50;
+	shrinkFactor = 10;
 
 	auto camera = GetSceneCamera();
 	camera->SetPositionAndRotation(glm::vec3(0, 5, 4), glm::quat(glm::vec3(-30 * TO_RADIANS, 0, 0)));
@@ -39,7 +39,7 @@ void Laborator1::Init()
 
 	// Create a shader program for rendering to texture
 	{
-		Shader *shader = new Shader("Instances");
+		Shader* shader = new Shader("Instances");
 		shader->AddShader(shaderPath + "VertexShader.glsl", GL_VERTEX_SHADER);
 		shader->AddShader(shaderPath + "GeometryShader.glsl", GL_GEOMETRY_SHADER);
 		shader->AddShader(shaderPath + "FragmentShader.glsl", GL_FRAGMENT_SHADER);
@@ -63,12 +63,14 @@ void Laborator1::Update(float deltaTimeSeconds)
 		shader->Use();
 
 		int loc_instances = shader->GetUniformLocation("instances");
-		glUniform1i(loc_instances, nrInstances);
+		glUniform1i(loc_instances, numberOfInstances);
+
+
 		//TODO add a shrink parameter for scaling each triangle in geometry shader
 		int loc_shrink = shader->GetUniformLocation("shrink");
-		glUniform1f(loc_shrink, shrink);
+		glUniform1f(loc_shrink, shrinkFactor);
 
-		RenderMesh(meshes["bamboo"], shaders["Instances"], glm::vec3(-3.3f, 0.5f, 0), glm::vec3(0.1f));
+		RenderMesh(meshes["bamboo"], shaders["Instances"], glm::vec3(0, 0, 0), glm::vec3(0.1f));
 	}
 }
 
@@ -84,15 +86,6 @@ void Laborator1::OnInputUpdate(float deltaTime, int mods)
 {
 	// treat continuous update based on input with window->KeyHold()
 
-	if (window->KeyHold(GLFW_KEY_X))
-	{
-		shrink+=0.1f;
-	}
-
-	if (window->KeyHold(GLFW_KEY_Z))
-	{
-		shrink-=0.1f;
-	}
 	//TODO add update for modifying the shrink parameter
 };
 
@@ -102,14 +95,24 @@ void Laborator1::OnKeyPress(int key, int mods)
 
 	if (key == GLFW_KEY_EQUAL)
 	{
-		nrInstances++;
-		nrInstances %= maxInstances;
+		numberOfInstances++;
+		numberOfInstances %= maximumInstances;
 	}
 
 	if (key == GLFW_KEY_MINUS)
 	{
-		nrInstances--;
-		nrInstances %= maxInstances;
+		numberOfInstances--;
+		numberOfInstances %= maximumInstances;
+	}
+
+	if (key == GLFW_KEY_P)
+	{
+		shrinkFactor+=shrinkFactor>10?0:1;
+	}
+
+	if (key == GLFW_KEY_O)
+	{
+		shrinkFactor -=shrinkFactor<5?0:1;
 	}
 };
 

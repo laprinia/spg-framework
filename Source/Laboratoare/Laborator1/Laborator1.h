@@ -25,8 +25,8 @@ class Laborator1 : public SimpleScene
 		void OnWindowResize(int width, int height) override;
 
 	private:
-		unsigned int nrInstances;
-		unsigned int maxInstances;
-		float shrink;
+		unsigned int numberOfInstances;
+		unsigned int maximumInstances;
+		float shrinkFactor;
 
 };

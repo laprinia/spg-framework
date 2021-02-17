@@ -24,21 +24,18 @@ void main()
 	vec3 p2 = gl_in[1].gl_Position.xyz;
 	vec3 p3 = gl_in[2].gl_Position.xyz;
 
-	vec3 gravityPoint = (p1+p2+p3)/3;
+	vec3 g = (p1 + p2 + p3) / 3;
 
-	p1 = p1 + normalize(p1 - gravityPoint) / shrink;
-	p2 = p2 + normalize(p2 - gravityPoint) / shrink;
-	p3 = p3 + normalize(p3 - gravityPoint) / shrink;
+	p1 = p1 + normalize(p1 - g) / shrink;
+	p2 = p2 + normalize(p2 - g) / shrink;
+	p3 = p3 + normalize(p3 - g) / shrink;
 
-	for (int i = 0; i < 1; i++)
+
+	for (int i = 0; i <= instances; i++)
 	{
-		//TODO modify offset so that instances are displayed on 6 columns
-		vec3 offset = vec3( (i % 6 ) * 4, (i / 6) * 4, 0);
+		vec3 offset = vec3((i % 6 ) * 2, (i / 6) * 6, 0);
 
-
-
-		//TODO modify the points so that the triangle shrinks relative to its center
-		texture_coord = v_texture_coord[0];
+        texture_coord = v_texture_coord[0];
 		EmitPoint(p1, offset);
 
 		texture_coord = v_texture_coord[1];
