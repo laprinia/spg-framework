@@ -59,7 +59,7 @@ vec3 color() {
 }
 
 void main() {
-    float intensityModifier=2;
+    float intensityModifier=1.3;
     vec3 originalColor = color();
     vec3 blurredOutput = vec3(0, 0, 0);
     for (int i = 0; i < kernelNumber; i++) {

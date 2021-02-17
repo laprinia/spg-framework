@@ -84,37 +84,19 @@ gl_Position = Projection * View * vec4(leftLowerPoint + leftLowerPointOffset, 1)
 texture_coord = vec2(0, 0);
 EmitVertex();
 
-gl_Position = Projection * View * vec4(intersectPoint, 1);
-texture_coord = vec2(1, 0);
-EmitVertex();
-
-
-gl_Position = Projection * View * vec4(leftUpperPoint + leftUpperPointOffset, 1);
-texture_coord = vec2(0, 1);
-EmitVertex();
-
-vec3 upperIntersectPoint=leftUpperPoint + leftUpperPointOffset+ distance((leftUpperPoint+leftLowerPointOffset),(rightUpperPoint+rightUpperPointOffset))/2;
-gl_Position = Projection * View * vec4(upperIntersectPoint, 1);
-texture_coord = vec2(1, 1);
-EmitVertex();
-
-
-
-//rect to end of intersection
-
-gl_Position = Projection * View * vec4(intersectPoint, 1);
-texture_coord = vec2(0, 0);
-EmitVertex();
 
 
 gl_Position = Projection * View * vec4(rightLowerPoint+rightLowerPointOffset, 1);
 texture_coord = vec2(1, 0);
 EmitVertex();
 
-
-gl_Position = Projection * View * vec4(upperIntersectPoint, 1);
+gl_Position = Projection * View * vec4(leftUpperPoint + leftUpperPointOffset, 1);
 texture_coord = vec2(0, 1);
 EmitVertex();
+
+
+//rect to end of intersection
+
 
 gl_Position = Projection * View * vec4(rightUpperPoint+rightUpperPointOffset, 1);
 texture_coord =vec2(1,1);
@@ -149,15 +131,17 @@ p11 = cubicBezier(t + 1.0 / pointsNumber, control_p4, control_p11, control_p12, 
 p12 = cubicBezier(t, control_p4, control_p11, control_p12, control_p13);
 p13 = cubicBezier(t + 1.0 / pointsNumber, control_p4, control_p11, control_p12, control_p13);
 
+vec3 lastPOffset;
+if (t>0.5) {
+lastPOffset = vec3(0,-0.9,0);
+}else {
+
+lastPOffset = vec3(0,0,0);
 }
 
-vec3 dp11=p11+vec3(3,0,0);
-vec3 dp12=p12+vec3(3,0,0);
-vec3 intersectStart=get_line_intersection(dp11.x,dp11.z,dp12.x,dp12.z,p5.x,p5.z,p6.x,p6.z);
-//void createInBetweenMountain(vec3 intersectPoint, vec3 leftLowerPoint,vec3 leftLowerPointOffset, vec3 leftUpperPoint,
-//float leftLowerPointOffset, vec3 rightLowerPoint,vec3 rightLowerPointOffset, vec3 rightUpperPoint, vec3 rightUpperPointOffset) {
+createInBetweenMountain(p4+vec3(0,-1,-1),p11,vec3(3,0,0),p12,vec3(3,0,0),p5,vec3(0,0,0),p6,lastPOffset);
 
-//createInBetweenMountain(p4+vec3(0,-1,-1),p11,vec3(3,0,0),p12,vec3(3,0,0),p5,vec3(0,0,0),p6,vec3(0,0,0));
-
+createInBetweenMountain(p4+vec3(0,-1,-1),p5,vec3(3,0,0),p6,vec3(3,0,0),p8,vec3(0,0,0),p9,lastPOffset);
+}
 
 }

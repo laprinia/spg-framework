@@ -51,7 +51,7 @@ float NorwegianFjords::GenerateRandomFloat(float lower, float upper) {
 
 void NorwegianFjords::GenerateControlPoints() {
 	//main branch
-	controlP1 = glm::vec3(0.0, 0.0, 0.0);
+	controlP1 = glm::vec3(0.2, 0.2, 0.2);
 	controlP2 = glm::vec3(GenerateRandomFloat(-5, 5), 0, controlP1.z + GenerateRandomFloat(-5, -1));
 	controlP3 = glm::vec3(GenerateRandomFloat(-5, 5), 0, controlP2.z + GenerateRandomFloat(-5, -1));
 	controlP4 = glm::vec3(GenerateRandomFloat(-5, 5), 0, controlP3.z + GenerateRandomFloat(-5, -1));
@@ -85,7 +85,7 @@ void NorwegianFjords::Init() {
 	boatFacingMatrix = GetLookAtMatrix(nextBoatPoint + riverInstanceOffset, lastBoatPoint);
 	auto camera = GetSceneCamera();
 
-	camera->SetPositionAndRotation(glm::vec3(0, 5, 4), glm::quat(glm::vec3(-30 * TO_RADIANS, 0, 0)));
+	camera->SetPositionAndRotation(glm::vec3(2, 3, 2), glm::quat(glm::vec3(-20 * TO_RADIANS, 0, 0)));
 	camera->Update();
 
 
