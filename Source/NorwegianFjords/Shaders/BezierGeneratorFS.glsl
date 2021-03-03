@@ -29,18 +29,6 @@ vec4 refraction( float refractive_index)
     return texture(texture_cubemap,refraction,1);
 }
 
-float lerp(float a, float b, float w)
-{
-  return a + w*(b-a);
-}
-
-vec4 getColor(vec4 color, vec4 cubeColor)
-{
-if(isReflective==0){
-    return color;
-  }
-
-}
 
 void main()
 {

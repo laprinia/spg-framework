@@ -132,7 +132,7 @@ p12 = cubicBezier(t, control_p4, control_p11, control_p12, control_p13);
 p13 = cubicBezier(t + 1.0 / pointsNumber, control_p4, control_p11, control_p12, control_p13);
 
 vec3 lastPOffset;
-if (t>0.5) {
+if (t==0) {
 lastPOffset = vec3(0,-0.9,0);
 }else {
 

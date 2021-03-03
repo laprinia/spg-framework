@@ -6,7 +6,7 @@ layout(location = 2) in vec2 v_texture_coord;
 
 layout(location = 0) out vec2 texture_coord;
 
-float blur=0;
+
 void main()
 {
 	texture_coord = v_texture_coord;
