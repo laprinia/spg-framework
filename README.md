@@ -23,7 +23,7 @@
 
 
 
-### 📷Screenshots:
+### 📷Project Screenshots:
 
 ![spg screenshot](/screenshots/screenshot.png "Bezier Boat")
 
