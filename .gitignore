@@ -1,7 +1,8 @@
 # General
 /*
 !.gitignore
-
+!README.md
+!/screenshots
 !/Visual Studio
 /Visual Studio/*
 !/Visual Studio/Property Sheets
@@ -13,6 +14,7 @@
 
 # Application
 
+!README.
 !/libs
 !/Resources
 !/Source
